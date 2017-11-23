@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
     <!-- <pre>{{ state.src }}</pre> -->
-    <router-link to="/editor"></router-link>
+    <router-link to="/editor">Editor (no DB)</router-link>
   </div>
 </template>
 

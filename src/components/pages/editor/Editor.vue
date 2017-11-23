@@ -1,8 +1,5 @@
 <template>
   <div ref="container">
-    Todoooooo: lol <br />
-    <a target="_blank" href="https://docs.google.com/document/d/1tfKqN32Idr6QphLVCSCzAE918Aj-J30WR3ITV4bvXXg/edit?usp=sharing">Googel List</a>
-    <br />
     <div v-if="projectFiles.length > 0">
       <input v-model="newFilePath" />
       <button @click="() => { newFile({ path: newFilePath }) }">Add File</button>

@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <header>
-      <span>Lok Lok Shader Editing Helper</span>
-      <span>Work in progress. <a class="todo" target="_blank" href="https://docs.google.com/document/d/1tfKqN32Idr6QphLVCSCzAE918Aj-J30WR3ITV4bvXXg/edit">Todo List.</a></span>
+      <router-link to="/" tag="span">Lok Lok Shader Editing Helper</router-link>
+      <span>No DB yet. Work in progress. <a class="todo" target="_blank" href="https://docs.google.com/document/d/1tfKqN32Idr6QphLVCSCzAE918Aj-J30WR3ITV4bvXXg/edit">Todo List.</a></span>
     </header>
     <main>
       <router-view></router-view>

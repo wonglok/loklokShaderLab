@@ -5,6 +5,8 @@
   "author": "Wong Lok <yellowhappy831@gmail.com>",
   "private": true,
   "scripts": {
+    "backup": "git add .; git commit -a -m \"backup on `date +'%Y-%m-%d %H:%M:%S'`\"; git push origin master;",
+    "deployWORLD": "npm run backup; npm run build; gh-pages -d dist",
     "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
     "build": "node build/build.js",
@@ -53,6 +55,7 @@
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.5",
     "friendly-errors-webpack-plugin": "^1.6.1",
+    "gh-pages": "^1.1.0",
     "html-webpack-plugin": "^2.30.1",
     "http-proxy-middleware": "^0.17.4",
     "opn": "^5.1.0",
