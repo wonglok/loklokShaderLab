@@ -13,7 +13,7 @@
 
       <span v-show="compiling">Compiling</span>
       <div>
-        <input type="range" style="width: 300px;" step="0.1" @input="(evt) => { updateSlider('evt.slider', evt.target.value) }" />
+        <input type="range" style="width: 300px;" step="0.1" @input="(evt) => { updateSlider(evt.target.value) }" />
       </div>
 
       <draggable v-model="projectFiles" :options="{group:'people'}" @start="drag = true" @end="drag = false" @change="() => { compileFiles() }">
@@ -140,6 +140,7 @@ export default {
     handleSubWindow ({ data }) {
       if (data.type === 'subwindow-ready') {
         console.log('subwindow-ready', data)
+        this.updateSlider(50)
       }
     },
     openWindow () {
@@ -159,7 +160,7 @@ export default {
       if (this.iframeLink) {
         this.iframer = this.iframeLink
         this.$nextTick(() => {
-          this.$refs['iframer'].contentWindow.onmessage = (evt) => {
+          this.iFrameHandler = (evt) => {
             var data = evt.data
             // console.log(evt)
             if (data.type === 'close') {
@@ -167,6 +168,7 @@ export default {
             }
             this.handleSubWindow({ data })
           }
+          window.addEventListener('message', this.iFrameHandler, false)
         })
       }
     },
@@ -179,7 +181,7 @@ export default {
         this.iwindow = false
       }
     },
-    updateSlider (evt, number) {
+    updateSlider (number) {
       var content = { type: 'cw.slider', data: { value: parseFloat(number) } }
       if (this.iwindow) {
         this.iwindow.postMessage(content, window.location.origin)
