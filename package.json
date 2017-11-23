@@ -5,8 +5,9 @@
   "author": "Wong Lok <yellowhappy831@gmail.com>",
   "private": true,
   "scripts": {
+    "cname": "cd dist; echo 'shader.wonglok.com' >CNAME",
     "backup": "git add .; git commit -a -m \"backup on `date +'%Y-%m-%d %H:%M:%S'`\"; git push origin master;",
-    "deployWORLD": "npm run backup; npm run build; gh-pages -d dist",
+    "deployWORLD": "npm run backup; npm run build; npm run cname; gh-pages -d dist",
     "dev": "node build/dev-server.js",
     "start": "node build/dev-server.js",
     "build": "node build/build.js",
