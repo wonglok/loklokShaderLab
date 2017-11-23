@@ -13,7 +13,7 @@
 
       <span v-show="compiling">Compiling</span>
       <div>
-        <input type="range" style="width: 300px;" step="0.1" @input="(evt) => { updateSlider(evt.target.value) }" />
+        <input type="range" style="width: 300px;" step="0.1" ref="demo-slider" @input="(evt) => { updateSlider(evt.target.value) }" />
       </div>
 
       <draggable v-model="projectFiles" :options="{group:'people'}" @start="drag = true" @end="drag = false" @change="() => { compileFiles() }">
@@ -62,6 +62,12 @@ export default {
     }
   },
   mounted () {
+    var rAF = () => {
+      this.syncInfoToSubWindow()
+      window.requestAnimationFrame(rAF)
+    }
+    window.requestAnimationFrame(rAF)
+
     window.addEventListener('beforeunload', (e) => {
       this.closeWindow()
     }, false)
@@ -137,12 +143,7 @@ export default {
       this.current.file = file
       // this.compileFiles()
     },
-    handleSubWindow ({ data }) {
-      if (data.type === 'subwindow-ready') {
-        console.log('subwindow-ready', data)
-        this.updateSlider(50)
-      }
-    },
+
     openWindow () {
       if (this.iframeLink) {
         var strWindowFeatures = 'menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes'
@@ -152,24 +153,12 @@ export default {
           if (data.type === 'close') {
             this.closeWindow()
           }
-          this.handleSubWindow({ data })
         }
       }
     },
     openiFrame () {
       if (this.iframeLink) {
         this.iframer = this.iframeLink
-        this.$nextTick(() => {
-          this.iFrameHandler = (evt) => {
-            var data = evt.data
-            // console.log(evt)
-            if (data.type === 'close') {
-              this.closeiFrame()
-            }
-            this.handleSubWindow({ data })
-          }
-          window.addEventListener('message', this.iFrameHandler, false)
-        })
       }
     },
     closeiFrame () {
@@ -179,6 +168,11 @@ export default {
       if (this.iwindow) {
         this.iwindow.close()
         this.iwindow = false
+      }
+    },
+    syncInfoToSubWindow () {
+      if (this.$refs['demo-slider']) {
+        this.updateSlider(this.$refs['demo-slider'].value)
       }
     },
     updateSlider (number) {

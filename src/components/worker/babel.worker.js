@@ -94,7 +94,7 @@ function OMG_${rand} () {
   ${entry}
   requireJSRequire(['@/main.js'], function () {
     setTimeout(() => {
-      window.top.postMessage({ type: 'subwindow-ready' }, window.location.origin);
+      window.top.postMessage({ type: 'requirejs-ready' }, window.location.origin);
     }, 10)
   });
 }

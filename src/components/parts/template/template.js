@@ -76,7 +76,7 @@ export function initTokenReplacer ({ html, js }) {
         suspendClose = true;
         setTimeout(() => {
           suspendClose = false;
-        }, data.duration);
+        }, 5000);
       }
     })
 
@@ -88,7 +88,7 @@ export function initTokenReplacer ({ html, js }) {
         suspendClose = true;
         setTimeout(() => {
           suspendClose = false;
-        }, data.duration);
+        }, 5000);
       }
     }, false)
 
@@ -369,7 +369,7 @@ export function makeAPI() {
 
         api.windowStack.onOpacity = (evt) => {
           var { value } = evt.data.data;
-          console.log('onOpacity', evt, evt.data.type, value / 100)
+          // console.log('onOpacity', evt, evt.data.type, value / 100)
           material.uniforms.opacity.value = value / 100
         }
 
