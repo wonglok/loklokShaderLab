@@ -12,10 +12,14 @@
       <button v-if="iframer" @click="() => { closeiFrame() }">closeIframe</button>
 
       <span v-show="compiling">Compiling</span>
+      <div>
+        <input type="range" style="width: 300px;" step="0.1" @input="(evt) => { updateSlider('evt.slider', evt.target.value) }" />
+      </div>
+
       <draggable v-model="projectFiles" :options="{group:'people'}" @start="drag = true" @end="drag = false" @change="() => { compileFiles() }">
         <div v-for="(pFile, pfKey) in projectFiles" :key="pfKey"><input v-model="pFile.path" style="font-size: 16px; width: 300px;" :disabled="checkDisable(pFile.path)" /> <button @click="setFile(pFile)">Edit</button></div>
       </draggable>
-      <iframe :src="iframer" v-if="iframer" />
+      <iframe :src="iframer" ref="iframer" v-if="iframer" />
       <ACE @save="() => { compileFiles() }" :filepath="current.file.path" v-model="current.file.src" @input="(value) => { isDirty = true; }"  theme="chrome" width="100%" :height="ace.height"></ACE>
     </div>
     <div v-else>
@@ -133,6 +137,11 @@ export default {
       this.current.file = file
       // this.compileFiles()
     },
+    handleSubWindow ({ data }) {
+      if (data.type === 'subwindow-ready') {
+        console.log('subwindow-ready', data)
+      }
+    },
     openWindow () {
       if (this.iframeLink) {
         var strWindowFeatures = 'menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes'
@@ -142,12 +151,23 @@ export default {
           if (data.type === 'close') {
             this.closeWindow()
           }
+          this.handleSubWindow({ data })
         }
       }
     },
     openiFrame () {
       if (this.iframeLink) {
         this.iframer = this.iframeLink
+        this.$nextTick(() => {
+          this.$refs['iframer'].contentWindow.onmessage = (evt) => {
+            var data = evt.data
+            // console.log(evt)
+            if (data.type === 'close') {
+              this.closeiFrame()
+            }
+            this.handleSubWindow({ data })
+          }
+        })
       }
     },
     closeiFrame () {
@@ -157,6 +177,15 @@ export default {
       if (this.iwindow) {
         this.iwindow.close()
         this.iwindow = false
+      }
+    },
+    updateSlider (evt, number) {
+      var content = { type: 'cw.slider', data: { value: parseFloat(number) } }
+      if (this.iwindow) {
+        this.iwindow.postMessage(content, window.location.origin)
+      }
+      if (this.$refs['iframer']) {
+        this.$refs['iframer'].contentWindow.postMessage(content, window.location.origin)
       }
     }
   }

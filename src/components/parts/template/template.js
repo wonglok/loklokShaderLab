@@ -1,3 +1,5 @@
+import requireJSStr from '../../worker/requirejs.str.txt'
+
 export function scriptSRC (src) {
   return `<script src="${src}">` + `</script>`
 }
@@ -37,6 +39,9 @@ export function indexHTML ({ author }) {
       margin: 0px;
       padding: 0px;
     }
+    html, body, #app {
+      box-sizing: border-box;
+    }
   </style>
   </head>
   <body>
@@ -54,7 +59,7 @@ export function newFile ({ path }) {
 }
 
 export function initTokenReplacer ({ html, js }) {
-  return html.replace(initToken(), `<script type="text" id="initAPP">` + js + `<` + `/` + `script>` + `<script>` + `
+  return html.replace(initToken(), `<script type="text" id="initAPP">` + js + `<` + `/` + `script>` + `<script>` + requireJSStr + `<` + `/` + `script>` + `<script>` + `
   (function(){
     var js = document.getElementById('initAPP').innerHTML;
     var blob = new Blob([js], { type: 'text/html' });
@@ -74,6 +79,18 @@ export function initTokenReplacer ({ html, js }) {
         }, data.duration);
       }
     })
+
+    window.addEventListener('keydown', (e) => {
+      if (
+        (e.keyCode === 82 && e.metaKey) ||
+        (e.keyCode === 82 && e.ctrlKey)
+      ) {
+        suspendClose = true;
+        setTimeout(() => {
+          suspendClose = false;
+        }, data.duration);
+      }
+    }, false)
 
     window.addEventListener('beforeunload', (e) => {
       if (!suspendClose) {
@@ -114,8 +131,9 @@ var clean = () => {
 `
     },
     {
-      path: '@/src/webgl/events.js',
-      src: `//
+      path: '@/src/ui/events.js',
+      src: `
+//
 export default ({ target, stack }) => {
   var mod = {};
 
@@ -126,62 +144,65 @@ export default ({ target, stack }) => {
   }
 
   var ev = mod.evlt = {
-  resizer: () => {
-    if (!target) { return }
-    mod.rect = target.getBoundingClientRect()
-    mod.aspect = mod.rect.width / mod.rect.height
-    mod.sendEvent({ type: 'resize', aspect: mod.aspect, rect: mod.rect })
-  },
-  tsData: false,
-  tmData: false,
-  emitClick: false,
-  onTS: (evt) => {
-    evt.preventDefault()
-    ev.tsData = { type: 'click', isIn: true, touches: evt.touches, pageX: evt.touches[0].pageX, pageY: evt.touches[0].pageY, rect: mod.rect }
-    ev.emitClick = true
-    setTimeout(() => {
-      ev.emitClick = false
-    }, 300)
-    mod.sendEvent({ type: 'ts', isIn: true, touches: evt.touches, pageX: evt.touches[0].pageX, pageY: evt.touches[0].pageY, rect: mod.rect })
-  },
-  onTM: (evt) => {
-    evt.preventDefault()
-    mod.sendEvent({ type: 'tm', touches: evt.touches, pageX: evt.touches[0].pageX, pageY: evt.touches[0].pageY, rect: mod.rect })
-  },
-  onTE: (evt) => {
-    if (ev.emitClick) {
-      ev.emitClick = false
-      mod.sendEvent(ev.tsData)
+    resizer: () => {
+      if (!target) { return }
+      mod.rect = target.getBoundingClientRect()
+      mod.aspect = mod.rect.width / mod.rect.height
+      mod.sendEvent({ type: 'resize', aspect: mod.aspect, rect: mod.rect })
+    },
+    tsData: false,
+    tmData: false,
+    emitClick: false,
+    onTS: (evt) => {
+      evt.preventDefault()
+      ev.tsData = { type: 'click', isIn: true, touches: evt.touches, pageX: evt.touches[0].pageX, pageY: evt.touches[0].pageY, rect: mod.rect }
+      ev.emitClick = true
+      setTimeout(() => {
+        ev.emitClick = false
+      }, 300)
+      mod.sendEvent({ type: 'ts', isIn: true, touches: evt.touches, pageX: evt.touches[0].pageX, pageY: evt.touches[0].pageY, rect: mod.rect })
+    },
+    onTM: (evt) => {
+      evt.preventDefault()
+      mod.sendEvent({ type: 'tm', touches: evt.touches, pageX: evt.touches[0].pageX, pageY: evt.touches[0].pageY, rect: mod.rect })
+    },
+    onTE: (evt) => {
+      if (ev.emitClick) {
+        ev.emitClick = false
+        mod.sendEvent(ev.tsData)
+      }
+      mod.sendEvent({ type: 'te', isIn: false })
+    },
+    onMDN: (evt) => {
+      mod.sendEvent({ type: 'mdn', pageX: evt.clientX, pageY: evt.clientY, rect: mod.rect })
+    },
+    onMUP: (evt) => {
+      mod.sendEvent({ type: 'mup', pageX: evt.clientX, pageY: evt.clientY, rect: mod.rect })
+    },
+    onMV: (evt) => {
+      evt.preventDefault()
+      mod.sendEvent({ type: 'mv', pageX: evt.pageX, pageY: evt.pageY, rect: mod.rect })
+    },
+    onMO: (evt) => {
+      mod.sendEvent({ isIn: true })
+    },
+    onME: (evt) => {
+      mod.sendEvent({ isIn: true })
+    },
+    onML: (evt) => {
+      mod.sendEvent({ isIn: false })
+    },
+    onCL: (evt) => {
+      mod.sendEvent({ type: 'click', pageX: evt.pageX, pageY: evt.pageY, rect: mod.rect })
+    },
+    onWHL: (evt) => {
+      mod.sendEvent({ type: 'wheel', deltaX: evt.deltaX, deltaY: evt.deltaY })
     }
-    mod.sendEvent({ type: 'te', isIn: false })
-  },
-  onMDN: (evt) => {
-    mod.sendEvent({ type: 'mdn', pageX: evt.clientX, pageY: evt.clientY, rect: mod.rect })
-  },
-  onMUP: (evt) => {
-    mod.sendEvent({ type: 'mup', pageX: evt.clientX, pageY: evt.clientY, rect: mod.rect })
-  },
-  onMV: (evt) => {
-    evt.preventDefault()
-    mod.sendEvent({ type: 'mv', pageX: evt.pageX, pageY: evt.pageY, rect: mod.rect })
-  },
-  onMO: (evt) => {
-    mod.sendEvent({ isIn: true })
-  },
-  onME: (evt) => {
-    mod.sendEvent({ isIn: true })
-  },
-  onML: (evt) => {
-    mod.sendEvent({ isIn: false })
-  },
-  onCL: (evt) => {
-    mod.sendEvent({ type: 'click', pageX: evt.pageX, pageY: evt.pageY, rect: mod.rect })
-  },
-  onWHL: (evt) => {
-    mod.sendEvent({ type: 'wheel', deltaX: evt.deltaX, deltaY: evt.deltaY })
   }
-  }
-  ev.resizer()
+
+  setTimeout(() => {
+    ev.resizer()
+  }, 10)
 
   var container = target
   container.addEventListener('mouseover', ev.onMO, false)
@@ -220,21 +241,51 @@ export default ({ target, stack }) => {
 
   return mod;
 }
+//
 `
+    },
+    {
+      path: '@/src/ui/window.js',
+      src: `
+//
+
+export default function setupWindow ({ stack }) {
+  var mod = {}
+
+  mod.sendEvent = (args) => {
+      for (var key in stack) {
+          stack[key](args)
+      }
+  }
+
+  window.addEventListener('message', ({ data }) => {
+    console.log(data);
+    if (data.type === 'cw.slider') {
+      mod.sendEvent({ type: 'cw.slider', data })
+    }
+  }, false)
+
+  return mod;
+}
+
+//
+      `
     },
     {
       path: '@/src/webgl/particle.js',
       src: `
 //
-var THREE = window.THREE
+var THREE = window.THREE;
 
-import setupEvents from '@/src/webgl/events.js';
+import setupEvents from '@/src/ui/events.js';
+import setupWindow from '@/src/ui/window.js';
 
 export function makeAPI() {
     var api = {}
 
     var WIDTH = 128
 
+    api.windowStack = {};
     api.eventStack = {};
     api.setup = ({
         target
@@ -253,6 +304,9 @@ export function makeAPI() {
             target,
             stack: api.eventStack
         })
+        api.Window = setupWindow({
+            stack: api.windowStack
+        })
         api.loop = setupLoop()
     }
 
@@ -270,7 +324,6 @@ export function makeAPI() {
             })
         }
         api.rAFID = window.requestAnimationFrame(rAF)
-
         return {
             stop() {
                 window.cancelAnimationFrame(api.rAFID)
@@ -293,6 +346,9 @@ export function makeAPI() {
             vertexShader: particleV.default,
             fragmentShader: particleF.default,
             uniforms: {
+                opacity: {
+                    value: 0,
+                },
                 resolution: {
                     value: new THREE.Vector2(window.innerWidth, window.innerHeight),
                 },
@@ -310,6 +366,12 @@ export function makeAPI() {
                 }
             }
         })
+
+        api.windowStack.onOpacity = (evt) => {
+          var { value } = evt.data.data;
+          console.log('onOpacity', evt, evt.data.type, value / 100)
+          material.uniforms.opacity.value = value / 100
+        }
 
         var points = new THREE.Points(geometry, material)
         points.matrixAutoUpdate = false
@@ -338,7 +400,7 @@ export function makeAPI() {
         target.appendChild(renderer.domElement);
 
         setTimeout(() => {
-            renderer.domElement.style.marginBottom = '-6px'
+            renderer.domElement.style.marginBottom = '-3px'
         }, 10)
 
         api.eventStack.setSize = ({
@@ -469,10 +531,7 @@ export function makeAPI() {
 }
 
 
-//
-
-
-      `
+`
     },
     {
       path: '@/src/webgl/particle/particle.vert',

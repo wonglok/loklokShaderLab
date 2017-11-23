@@ -1,5 +1,4 @@
 import * as Babel from '@babel/standalone/babel.js'
-import requireJSStr from './requirejs.str.txt'
 
 var umd = require('babel-plugin-transform-es2015-modules-umd')
 Babel.registerPlugin('transform-es2015-modules-umd', umd)
@@ -90,11 +89,12 @@ self.onmessage = ({ data }) => {
     }, '')
     var rand = (Math.random() * 100000000000000).toFixed(0)
     var result = `
-${requireJSStr}
 function OMG_${rand} () {
   var self = this;
   ${entry}
-  requireJSRequire(['@/main.js'])
+  requireJSRequire(['@/main.js'], function () {
+    window.top.postMessage({ type: 'subwindow-ready' }, window.location.origin);
+  });
 }
 new OMG_${rand}();
 `
