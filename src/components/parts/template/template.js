@@ -353,7 +353,7 @@ export function makeAPI() {
                     value: new THREE.Vector2(window.innerWidth, window.innerHeight),
                 },
                 picture: {
-                    value: new THREE.TextureLoader().load('https://pixabay.com/get/eb3cb50a2cf4023ed1584d05fb09449ee471e4c818b4104096f8c67fa4e8/heart-2945403_1280.jpg')
+                    value: new THREE.TextureLoader().load('https://picsum.photos/200/300/?gravity=east')
                 },
                 pointSize: {
                     value: window.devicePixelRatio || 1.0
