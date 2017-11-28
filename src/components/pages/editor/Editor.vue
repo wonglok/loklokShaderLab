@@ -1,5 +1,5 @@
 <template>
-  <div ref="container">
+  <div ref="container" class="container">
     <div v-if="projectFiles.length > 0">
       <input v-model="newFilePath" />
       <button @click="() => { newFile({ path: newFilePath }) }">Add File</button>
@@ -19,7 +19,8 @@
       <draggable v-model="projectFiles" :options="{group:'people'}" @start="drag = true" @end="drag = false" @change="() => { compileFiles() }">
         <div v-for="(pFile, pfKey) in projectFiles" :key="pfKey"><input v-model="pFile.path" style="font-size: 16px; width: 300px;" :disabled="checkDisable(pFile.path)" /> <button @click="setFile(pFile)">Edit</button></div>
       </draggable>
-      <iframe :src="iframer" ref="iframer" v-if="iframer" class="iframe" />
+
+      <iframe width="400" height="400" :src="iframer" frameborder="0" ref="iframer" v-if="iframer" class="iframe"  allowfullscreen></iframe>
       <ACE @save="() => { compileFiles() }" :filepath="current.file.path" v-model="current.file.src" @input="(value) => { isDirty = true; }"  theme="chrome" width="100%" :height="ace.height"></ACE>
     </div>
     <div v-else>
@@ -189,9 +190,15 @@ export default {
 </script>
 
 <style>
+.container{
+  position: relative;
+}
 .iframe{
-  width: 500px;
-  height: 500px;
-  border: red solid 0px;
+  z-index: 10;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  max-width: 400px;
+  max-height: 400px;
 }
 </style>

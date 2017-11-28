@@ -41,6 +41,9 @@ export function indexHTML ({ author }) {
     }
     html, body, #app {
       box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
   </style>
   </head>
@@ -397,11 +400,9 @@ export function makeAPI() {
 
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio || 1.0)
-        target.appendChild(renderer.domElement);
+        //renderer.domElement.style.marginBottom = '-3px'
 
-        setTimeout(() => {
-            renderer.domElement.style.marginBottom = '-3px'
-        }, 10)
+        target.appendChild(renderer.domElement);
 
         api.eventStack.setSize = ({
             type,
@@ -409,7 +410,12 @@ export function makeAPI() {
             aspect
         }) => {
             if (type === 'resize' && rect) {
-                renderer.setSize(rect.width, rect.height + 6)
+                // renderer.setSize(rect.width, rect.height);
+                // renderer.setPixelRatio(window.devicePixelRatio || 1.0)
+
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio || 1.0)
+
                 camera.aspect = aspect;
                 camera.updateProjectionMatrix()
             }
@@ -699,9 +705,9 @@ void toBall(vec3 pos, out float az, out float el) {
 // lastVel.xyz = fromBall(1.0, az, el);
 
 void main() {
-  vec2 uv = gl_FragCoord.xy / resolution.xy;
+    vec2 uv = gl_FragCoord.xy / resolution.xy;
 
-  vec4 lastVel = texture2D( velTex, uv );
+    vec4 lastVel = texture2D( velTex, uv );
     vec4 lastPos = texture2D( posTex, uv );
 
     float az = 0.0;
