@@ -19,7 +19,7 @@
       <draggable v-model="projectFiles" :options="{group:'people'}" @start="drag = true" @end="drag = false" @change="() => { compileFiles() }">
         <div v-for="(pFile, pfKey) in projectFiles" :key="pfKey"><input v-model="pFile.path" style="font-size: 16px; width: 300px;" :disabled="checkDisable(pFile.path)" /> <button @click="setFile(pFile)">Edit</button></div>
       </draggable>
-      <iframe :src="iframer" ref="iframer" v-if="iframer" />
+      <iframe :src="iframer" ref="iframer" v-if="iframer" class="iframe" />
       <ACE @save="() => { compileFiles() }" :filepath="current.file.path" v-model="current.file.src" @input="(value) => { isDirty = true; }"  theme="chrome" width="100%" :height="ace.height"></ACE>
     </div>
     <div v-else>
@@ -189,5 +189,9 @@ export default {
 </script>
 
 <style>
-
+.iframe{
+  width: 500px;
+  height: 500px;
+  border: red solid 0px;
+}
 </style>
