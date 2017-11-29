@@ -5,6 +5,8 @@ import App from './App'
 import router from './router'
 import VueSession from 'vue-session'
 Vue.use(VueSession)
+var VueTouch = require('vue-touch-easyhi')
+Vue.use(VueTouch)
 
 Vue.config.productionTip = false
 

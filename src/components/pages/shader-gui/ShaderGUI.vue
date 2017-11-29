@@ -1,11 +1,17 @@
 <template>
   <div>
-    <div></div>
+    <div class="connectors">
+      <Connector />
+    </div>
   </div>
 </template>
 
 <script>
+import Connector from '@/components/parts/connectors/Connector.vue'
 export default {
+  components: {
+    Connector
+  },
   data () {
     return {
     }
@@ -13,6 +19,9 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.connectors{
+
+}
 
 </style>
