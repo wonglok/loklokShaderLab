@@ -37,10 +37,36 @@ export const getExecs = ({ connectorGroups, shaderType, connections }) => {
 
   let resolution = []
 
+  let getConnectedArgs = ({ ball, gpID }) => {
+    var dependency = ball.items.filter((baller) => {
+      return baller.gpID !== gpID
+    })[0]
+
+    var funcName = connectorGroups.filter((gp, gpIdx) => {
+      return gp.id === dependency.gpID
+    })[0].funcName
+
+    console.log(funcName, dependency.gpID)
+
+    return 'res_' + funcName
+  }
+
   let getArgs = ({ line, inputSide, outputSide }) => {
-    //
-    console.log(line)
-    return ''
+    console.log(outputSide.funcName, outputSide.args)
+
+    return outputSide.ballsIn.filter((ball) => {
+      return ball.gpID === outputSide.id
+    }).reduce((accu, ball, ballKey, ballsIn) => {
+      if (ball.items.length >= 2) {
+        accu += getConnectedArgs({ ball, gpID: ball.gpID })
+      } else {
+        accu += '0.0'
+      }
+      if (ballKey < (ballsIn.length - 1)) {
+        accu += ','
+      }
+      return accu
+    }, '')
   }
 
   let resovleEquation = ({ gp }) => {
@@ -97,7 +123,7 @@ export const getExecs = ({ connectorGroups, shaderType, connections }) => {
     return item.root === true && item.shaderType === shaderType
   }).reduce((accu, gp, key) => {
     var resolution = resovleEquation({ gp })
-    console.log(resolution)
+    // console.log(resolution)
 
     var dep = resolution.reduce((accu, res) => {
       accu += res.code + '\n'
