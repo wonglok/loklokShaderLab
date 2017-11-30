@@ -4,6 +4,7 @@
       <router-link to="/" tag="span">Lok Lok Shader Editing Helper</router-link>
       <span>No DB yet. Work in progress. <a class="todo" target="_blank" href="https://docs.google.com/document/d/1tfKqN32Idr6QphLVCSCzAE918Aj-J30WR3ITV4bvXXg/edit">Todo List.</a></span>
     </header>
+    <div class="taller"></div>
     <main>
       <router-view></router-view>
     </main>
@@ -26,13 +27,21 @@ export default {
 }
 
 header {
+  z-index: 100;
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  left: 0px;
   margin: 0;
   height: 56px;
-  padding: 0 16px 0 24px;
   background-color: #35495E;
   color: #ffffff;
   display: flex;
   justify-content: space-between;
+}
+
+.taller{
+  height: 56px;
 }
 
 header span {
@@ -44,6 +53,7 @@ header span {
   font-weight: 400;
   box-sizing: border-box;
   padding-top: 16px;
+  margin: 0px 10px;
 }
 .todo{
   color: white;

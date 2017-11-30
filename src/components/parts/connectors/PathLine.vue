@@ -22,7 +22,7 @@ function offset (elt, parent) {
 
 export default {
   props: {
-    gradientID: {},
+    seed: {},
     refresher: {},
     svg: {},
     svgCon: {},
@@ -31,6 +31,7 @@ export default {
   },
   data () {
     return {
+      // seed: Math.random(),
       svgWidth: 0,
       svgHeight: 0,
 
@@ -158,8 +159,8 @@ export default {
       var endX = this.endX
       var endY = this.endY
 
-      var deltaX = (endX - startX) * 0.175
-      var deltaY = (endY - startY) * 0.175
+      var deltaX = (endX - startX) * (0.1 + (0.3 * this.seed))
+      var deltaY = (endY - startY) * (0.1 + (0.3 * this.seed))
       // for further calculations which ever is the shortest distance
       var delta = deltaY < absolute(deltaX) ? deltaY : absolute(deltaX)
 

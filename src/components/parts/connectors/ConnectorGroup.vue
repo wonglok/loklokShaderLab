@@ -1,8 +1,9 @@
 <template>
 <div class="group">
-  <div class="box-connector box-group-1" :key="ballKey" v-for="(ball, ballKey) in getBallsModeOfConnectorGroup(conntGp.id, ballsMode)">
-    <draggable :class="{ 'has-two': hasTwo(ball.items) }" class="connector" :ref="ball.id" :options="{group: { name: 'connectors', pull () { return hasOne(ball.items) }, put () { return hasOne(ball.items) } }}" v-model="ball.items" @start="drag = true" @end="drag = false" @change="() => { $nextTick(() => { $forceUpdate() })  }">
-      <div class="drag-handler" @click="() => { removePair(ball); removePair(ball); }" v-for="(item, index) in ball.items" :key="index">
+  <div class="box-connector box-group-1" :class="{ [ballsMode]: true}" :key="ballKey" v-for="(ball, ballKey) in getBallsModeOfConnectorGroup(conntGp.id, ballsMode)">
+    <draggable :class="{ 'has-two': hasTwo(ball.items) }" :style="ball.style" class="connector" :ref="ball.id" :options="{group: { name: 'connectors', pull: 'clone', put () { return hasOne(ball.items) && ballsMode === 'ballsIn' } }}" v-model="ball.items" @change="() => { $nextTick(() => { $forceUpdate() })  }">
+      <div class="drag-handler" @click="() => { removePair(ball); }" v-for="(item, index) in ball.items" :key="index">
+        {{ ball.label }}
       </div>
     </draggable>
   </div>
@@ -17,7 +18,20 @@ export default {
     connectorGroups: {},
     balls: {},
     conntGp: {},
-    ballsMode: {}
+    ballsMode: {},
+    removePair: {}
+  },
+  watch: {
+    balls () {
+      this.$nextTick(() => {
+        this.$emit('mergeRefs', this.$refs)
+      })
+    },
+    connectorGroups () {
+      this.$nextTick(() => {
+        this.$emit('mergeRefs', this.$refs)
+      })
+    }
   },
   mounted () {
     this.$emit('mergeRefs', this.$refs)
@@ -25,26 +39,13 @@ export default {
   components: {
     draggable
   },
+  computed: {
+  },
   methods: {
     getBallsModeOfConnectorGroup (boxID, mode) {
       return this.connectorGroups.filter((box) => {
         return box.id === boxID
       })[0][mode]
-    },
-    removePair (ball) {
-      var pair = ball.items
-      if (pair.length >= 2) {
-        pair.forEach((item) => {
-          if (item.id !== pair.id) {
-            let anotherOne = item
-            pair.splice(pair.indexOf(anotherOne), 1)
-            let anotherBall = this.balls.filter((ballItem) => {
-              return ballItem.id === anotherOne.id
-            })[0]
-            anotherBall.items.push(anotherOne)
-          }
-        })
-      }
     },
     hasTwo (items) {
       return items.length >= 2
@@ -70,7 +71,7 @@ export default {
   border-radius: 50%;
   border: #bababa solid 3px;
 
-  background-image: white;
+  background: white;
 
   width: 40px;
   height: 40px;
@@ -86,16 +87,32 @@ export default {
   width: 40px;
   height: 40px;
 
-  background-image: linear-gradient(45deg, rgba(0,0,0,0.2), rgba(255,255,255,0.2));
+  background-image: linear-gradient(45deg, rgba(100,100,100,0.9), rgba(255,255,255,0.9));
 
   border-radius: 50%;
   border: #bababa solid 3px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+}
+
+.ballsIn .drag-handler{
+  background-image: linear-gradient(45deg, rgba(255, 166, 32, 0.9), rgba(255,0,255,0.9));
+  color: white;
+}
+.ballsOut .drag-handler{
+  background-image: linear-gradient(45deg, rgba(12, 191, 42, 0.9), rgba(0, 232, 255, 0.9));
+  color: white;
 }
 .has-two .drag-handler {
-  background-image: linear-gradient(45deg, rgba(255,0,0,0.5), rgba(255,0,255,0.5));
+  background-image: linear-gradient(45deg, rgba(27, 255, 244, 0.9), rgba(204, 0, 255, 0.9));
+  color: white;
 }
 
 .box-connector{
   display: inline-block;
 }
+
 </style>
