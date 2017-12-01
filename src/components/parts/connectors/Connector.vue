@@ -47,7 +47,7 @@
     <div class="word-con">
 
       <div class="word-con-rel">
-        <div v-for="conntGp in doc.connectorGroups" :style="conntGp.style" class="connect-box">
+        <div :key="conntGpKey" v-for="(conntGp, conntGpKey) in doc.connectorGroups" :style="conntGp.style" class="connect-box">
           <div class="connect-box-rel">
             <div class="stick-top-right" >
               <span class="emoji" v-touch:pan="(evt) => { onPan(evt, conntGp) }">
@@ -194,12 +194,14 @@ export default {
       if (window.confirm(`Remove ${obj.type}?`)) {
         var gpID = obj.id
 
+        // remove balls in
         obj.ballsIn.filter((ball) => {
           return ball.items.length >= 2
         }).forEach((ball) => {
           this.removePair(ball)
         })
 
+        // remove balls in, inside another source
         this.connections.filter((ball) => {
           return ball.items.filter((baller) => {
             return baller.gpID === gpID
