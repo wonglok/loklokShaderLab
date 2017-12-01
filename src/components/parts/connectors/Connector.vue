@@ -24,6 +24,7 @@
   <div class="float-me-taller"></div>
 
   <div class="debug-console">
+    <pre>{{ connections }}</pre>
     <pre>{{ vertexShaderText }}</pre>
     <hr />
     <pre>{{ fragmentShaderText }}</pre>
@@ -192,15 +193,38 @@ export default {
     removeGp (obj) {
       if (window.confirm(`Remove ${obj.type}?`)) {
         var gpID = obj.id
-        this.connections.filter((ball, key, arr) => {
+
+        obj.ballsIn.filter((ball) => {
+          return ball.items.length >= 2
+        }).forEach((ball) => {
+          this.removePair(ball)
+        })
+
+        this.connections.filter((ball) => {
           return ball.items.filter((baller) => {
             return baller.gpID === gpID
           }).length > 0
-        }).forEach((cleanUp) => {
-          this.removePair(cleanUp)
+        }).forEach((ball) => {
+          this.removePair(ball)
         })
 
-        this.doc.connectorGroups.indexOf(obj) !== -1 && this.doc.connectorGroups.splice(this.doc.connectorGroups.indexOf(obj), 1)
+        // this.connections.filter((ball) => {
+        //   return ball.items.filter((baller) => {
+        //     return baller.id === gpID
+        //   }).length > 0
+        // }).filter((ball) => {
+        //   return ball.items.length >= 2
+        // }).filter((ball) => {
+        //   return ball.items.filter((baller) => {
+        //     return baller.id !== gpID
+        //   }).length > 0
+        // }).forEach((ball) => {
+        //   this.removePair(ball)
+        // })
+
+        this.$nextTick(() => {
+          this.doc.connectorGroups.indexOf(obj) !== -1 && this.doc.connectorGroups.splice(this.doc.connectorGroups.indexOf(obj), 1)
+        })
       }
     },
     getJSON () {
