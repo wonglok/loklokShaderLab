@@ -2,13 +2,20 @@
 <div>
 
   <div class="float-me">
+    <button @click="addGp('outputGLFragColor')">outputGLFragColor</button>
+    <hr />
+    <button @click="addGp('outputPosition')">outputPosition</button>
+    <button @click="addGp('outputPontSize')">outputPontSize</button>
+    <button @click="addGp('outputUV')">outputUV</button>
+    <hr />
     <button @click="addGp('getPosition')">getPosition</button>
     <button @click="addGp('time')">getTime</button>
     <button @click="addGp('sin')">getSine</button>
+    <button @click="addGp('getConstant')">getConstant</button>
+    <button @click="addGp('getVec4')">getVec4</button>
     <hr />
-    <button @click="addGp('vec3Adder')">vec3Adder</button>
-    <hr />
-    <button @click="addGp('outputPosition')">outputPosition</button>
+    <button @click="addGp('vec3Modifier')">vec3Modifier</button>
+    <button @click="addGp('vec4Modifier')">vec4Modifier</button>
     <hr />
     <button @click="getJSON()">Save Scene</button>
     <input type="file" @change="(evt) => { handleFile(evt.target.files[0]) }" />
@@ -17,13 +24,14 @@
   <div class="float-me-taller"></div>
 
   <div class="debug-console">
-    <pre>{{ shaderText }}</pre>
-    <pre>{{ connections }}</pre>
+    <pre>{{ vertexShaderText }}</pre>
+    <hr />
+    <pre>{{ fragmentShaderText }}</pre>
   </div>
   <div class="container">
 
     <div class="svg-con" ref="svgCon">
-      <svg ref="svgEl" :width="winW * 2" :height="winH * 2">
+      <svg ref="svgEl" :width="winW * 2.5" :height="winH * 2.5">
         <!-- <defs>
           <linearGradient :id="gradientID" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stop-color="rgba(0, 0, 255, 0.25)" />
@@ -97,12 +105,27 @@ export default {
       fps: 0
     }
   },
+  watch: {
+    vertexShaderText () {
+      this.$emit('vscode', this.vertexShaderText)
+    },
+    fragmentShaderText () {
+      this.$emit('fscode', this.fragmentShaderText)
+    }
+  },
   computed: {
-    shaderText () {
+    vertexShaderText () {
       return ShaderExport.getCode({
         connectorGroups: this.doc.connectorGroups,
         connections: this.connections,
         shaderType: 'vertex'
+      })
+    },
+    fragmentShaderText () {
+      return ShaderExport.getCode({
+        connectorGroups: this.doc.connectorGroups,
+        connections: this.connections,
+        shaderType: 'fragment'
       })
     },
     balls: {
@@ -132,9 +155,7 @@ export default {
     var rAF = (thisLoop) => {
       this.fps = 1000 / (thisLoop - lastLoop)
       lastLoop = thisLoop
-
       this.rAFID = window.requestAnimationFrame(rAF)
-
       this.refresh()
     }
     this.rAFID = window.requestAnimationFrame(rAF)
@@ -143,8 +164,7 @@ export default {
     this.svgCon = this.$refs['svgCon']
 
     /* eslint-disable */
-    this.doc.connectorGroups =
-    [{"shaderType":"vertex","root":true,"type":"outputPosition","id":"ce43d945-b356-4b4a-b051-dfc9a97c1c95","style":{"top":"965.5373218021851px","left":"426.9647255637601px"},"execID":"__2188","funcName":"outputPosition__2188","code":"void outputPosition__2188 (vec3 position) {\n  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n  vec4 outputPos = projectionMatrix * mvPosition;\n  gl_Position = outputPos;\n}","args":[{"type":"vec3","name":"position"}],"returnType":"void","ballsIn":[{"id":"34531d23-dea9-4d60-af7f-ee161c5ed540","symbol":"vec3 position","style":{"margin-right":"25px"},"label":"vec3","items":[{"id":"34531d23-dea9-4d60-af7f-ee161c5ed540","label":"vec3","gpID":"ce43d945-b356-4b4a-b051-dfc9a97c1c95"},{"id":"2d6937bd-4f91-4312-ae53-14746d0a8dec","label":"vec3","gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"}],"gpID":"ce43d945-b356-4b4a-b051-dfc9a97c1c95"}],"ballsOut":[]},{"shaderType":"common","root":false,"type":"getPosition","id":"5dd29483-a695-48a6-937e-8d7a4825cc02","style":{"top":"51.416623216477106px","left":"70.4739100177476px"},"execID":"__8146","funcName":"getPosition__8146","code":"vec3 getPosition__8146 () {\n  return position;\n}","args":[],"returnType":"vec3","ballsIn":[],"ballsOut":[{"id":"8ce3a255-421a-4945-a5ea-77c5bb5e83c4","symbol":"vec3","style":{},"label":"vec3","items":[{"id":"8ce3a255-421a-4945-a5ea-77c5bb5e83c4","label":"vec3","gpID":"5dd29483-a695-48a6-937e-8d7a4825cc02"}],"gpID":"5dd29483-a695-48a6-937e-8d7a4825cc02"}]},{"shaderType":"common","root":false,"type":"vec3Adder","id":"432b8317-2b4a-4ec4-a536-16f4475041ed","style":{"top":"660.7140786653906px","left":"424.84528540341245px"},"execID":"__1118","funcName":"vec3Adder__1118","code":"vec3 vec3Adder__1118 (vec3 v3, float iX, float iY, float iZ) {\n  v3.xyz = v3.xyz + vec3(iX, iY, iZ);\n  return v3;\n}","args":[{"type":"vec3","name":"v3"},{"type":"float","name":"iX"},{"type":"float","name":"iY"},{"type":"float","name":"iZ"}],"returnType":"vec3","ballsIn":[{"id":"605a3688-ebf0-4b1d-8b8a-1f7416351fda","symbol":"vec3","style":{"margin-right":"25px"},"label":"vec3","items":[{"id":"605a3688-ebf0-4b1d-8b8a-1f7416351fda","label":"vec3","gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"},{"id":"8ce3a255-421a-4945-a5ea-77c5bb5e83c4","label":"vec3","gpID":"5dd29483-a695-48a6-937e-8d7a4825cc02"}],"gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"},{"id":"0433b279-430c-4449-b98a-d58768e5f6dd","symbol":"float","style":{},"label":"iX","items":[{"id":"0433b279-430c-4449-b98a-d58768e5f6dd","label":"iX","gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"},{"id":"f53eb441-d155-40cc-8254-2daa19f81207","label":"float","gpID":"3ffbecfe-e686-4127-8e10-cdd4db21ac3a"}],"gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"},{"id":"3a2e6c5f-9401-4efa-9e4e-7a1aeecaa69c","symbol":"float","style":{},"label":"iY","items":[{"id":"3a2e6c5f-9401-4efa-9e4e-7a1aeecaa69c","label":"iY","gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"},{"id":"e99454ba-0786-492a-be58-68ff44ee7399","label":"float","gpID":"831f4807-25f6-4204-88e2-8a09c5c31821"}],"gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"},{"id":"9b4d65fc-898e-46e6-b401-85cd1fa7bb25","symbol":"float","style":{},"label":"iZ","items":[{"id":"9b4d65fc-898e-46e6-b401-85cd1fa7bb25","label":"iZ","gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"},{"id":"e8c6a9d3-723f-4123-a7a6-7f9c4faab36f","label":"float","gpID":"83ed3b42-9f42-4e63-a500-f3e763e73aaa"}],"gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"}],"ballsOut":[{"id":"2d6937bd-4f91-4312-ae53-14746d0a8dec","symbol":"vec3","style":{},"label":"vec3","items":[{"id":"2d6937bd-4f91-4312-ae53-14746d0a8dec","label":"vec3","gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"}],"gpID":"432b8317-2b4a-4ec4-a536-16f4475041ed"}]},{"shaderType":"common","root":false,"type":"time","id":"831f4807-25f6-4204-88e2-8a09c5c31821","style":{"top":"279.45717048957584px","left":"465.4156569619122px"},"execID":"__9777","funcName":"getTime__9777","code":"float getTime__9777 () {\n  return sin(time);\n}","args":[],"returnType":"float","ballsIn":[],"ballsOut":[{"id":"e99454ba-0786-492a-be58-68ff44ee7399","symbol":"","style":{"margin-right":"25px"},"label":"float","items":[{"id":"e99454ba-0786-492a-be58-68ff44ee7399","label":"float","gpID":"831f4807-25f6-4204-88e2-8a09c5c31821"}],"gpID":"831f4807-25f6-4204-88e2-8a09c5c31821"}]},{"shaderType":"common","root":false,"type":"time","id":"3ffbecfe-e686-4127-8e10-cdd4db21ac3a","style":{"top":"9.884689852105037px","left":"584.3570812904414px"},"execID":"__6285","funcName":"getTime__6285","code":"float getTime__6285 () {\n  return sin(time);\n}","args":[],"returnType":"float","ballsIn":[],"ballsOut":[{"id":"f53eb441-d155-40cc-8254-2daa19f81207","symbol":"","style":{"margin-right":"25px"},"label":"float","items":[{"id":"f53eb441-d155-40cc-8254-2daa19f81207","label":"float","gpID":"3ffbecfe-e686-4127-8e10-cdd4db21ac3a"}],"gpID":"3ffbecfe-e686-4127-8e10-cdd4db21ac3a"}]},{"shaderType":"common","root":false,"type":"time","id":"83ed3b42-9f42-4e63-a500-f3e763e73aaa","style":{"top":"279.4665586410594px","left":"875.5117099227024px"},"execID":"__5852","funcName":"getTime__5852","code":"float getTime__5852 () {\n  return sin(time);\n}","args":[],"returnType":"float","ballsIn":[],"ballsOut":[{"id":"e8c6a9d3-723f-4123-a7a6-7f9c4faab36f","symbol":"","style":{"margin-right":"25px"},"label":"float","items":[{"id":"e8c6a9d3-723f-4123-a7a6-7f9c4faab36f","label":"float","gpID":"83ed3b42-9f42-4e63-a500-f3e763e73aaa"}],"gpID":"83ed3b42-9f42-4e63-a500-f3e763e73aaa"}]}]
+    // this.doc.connectorGroups =
     /* eslint-enable */
 
     // this.$nextTick(() => {
@@ -207,7 +227,6 @@ export default {
         dpr -= 1
       }
       let factor = 1000 / this.fps / dpr
-
       conntGp.style.top = ((originalTop + evt.velocityY * factor)) + 'px'
       conntGp.style.left = ((originalLeft + evt.velocityX * factor)) + 'px'
     },
@@ -317,10 +336,10 @@ export default {
   background-color: rgba(255,255,255,0.8);
   z-index: 1000;
   position: fixed;
-  top: 56px;
+  top: 556px;
   right: 0px;
   overflow: auto;
-  height: calc(100% - 56px);
+  height: calc(100% - 56px - 500px);
   width: 500px;
 }
 

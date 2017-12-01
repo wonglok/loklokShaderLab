@@ -63,14 +63,14 @@ export function makeGroup ({ returnType = 'void', shaderType = 'common', root = 
 
 export function getStyle () {
   return {
-    top: (window.scrollY + 30) + 'px',
-    left: (window.scrollX + 30) + 'px'
+    top: (window.scrollY + 300) + 'px',
+    left: (window.scrollX + 300) + 'px'
   }
 }
 
 export function makeTemplate ({ type }) {
   var newObj
-  var execID = '__' + (Math.random() * 10000).toFixed(0)
+  var execID = '_' + (Math.random() * 10000).toFixed(0)
   switch (type) {
     case 'time':
       newObj = makeGroup({
@@ -118,9 +118,9 @@ export function makeTemplate ({ type }) {
         ]
       })
       break
-    case 'vec3Adder':
+    case 'vec3Modifier':
       newObj = makeGroup({
-        type: 'vec3Adder',
+        type: 'vec3Modifier',
         style: getStyle(),
         // =-=-=-=-=-=-=-=-=-=
         execID,
@@ -130,9 +130,9 @@ export function makeTemplate ({ type }) {
           { type: 'float', name: 'iY' },
           { type: 'float', name: 'iZ' }
         ],
-        funcName: `vec3Adder${execID}`,
+        funcName: `vec3Modifier${execID}`,
         code:
-`vec3 vec3Adder${execID} (vec3 v3, float iX, float iY, float iZ) {
+`vec3 vec3Modifier${execID} (vec3 v3, float iX, float iY, float iZ) {
   v3.xyz = v3.xyz + vec3(iX, iY, iZ);
   return v3;
 }`,
@@ -146,6 +146,39 @@ export function makeTemplate ({ type }) {
         ],
         ballsOut: [
           makeBall({ symbol: 'vec3', label: 'vec3' })
+        ]
+      })
+      break
+    case 'vec4Modifier':
+      newObj = makeGroup({
+        type: 'vec4Modifier',
+        style: getStyle(),
+        // =-=-=-=-=-=-=-=-=-=
+        execID,
+        args: [
+          { type: 'vec4', name: 'v4' },
+          { type: 'float', name: 'iX' },
+          { type: 'float', name: 'iY' },
+          { type: 'float', name: 'iZ' },
+          { type: 'float', name: 'iW' }
+        ],
+        funcName: `vec4Modifier${execID}`,
+        code:
+`vec4 vec4Modifier${execID} (vec4 v4, float iX, float iY, float iZ, float iW) {
+  v4.xyzw = v4.xyzw + vec4(iX, iY, iZ, iW);
+  return v4;
+}`,
+        returnType: `vec4`,
+        // =-=-=-=-=-=-=-=-=-=
+        ballsIn: [
+          makeBall({ symbol: 'vec4', label: 'vec4', style: { 'margin-right': '0px' } }),
+          makeBall({ symbol: 'float', label: 'iX' }),
+          makeBall({ symbol: 'float', label: 'iY' }),
+          makeBall({ symbol: 'float', label: 'iZ' }),
+          makeBall({ symbol: 'float', label: 'iW' })
+        ],
+        ballsOut: [
+          makeBall({ symbol: 'vec4', label: 'vec4' })
         ]
       })
       break
@@ -176,9 +209,82 @@ export function makeTemplate ({ type }) {
         ]
       })
       break
+    case 'outputPontSize':
+      newObj = makeGroup({
+        root: true,
+        shaderType: 'vertex',
+        type: 'outputPontSize',
+        style: getStyle(),
+        // =-=-=-=-=-=-=-=-=-=
+        execID,
+        args: [
+          { type: 'float', name: 'pointSize' }
+        ],
+        funcName: `outputPontSize${execID}`,
+        code:
+`void outputPontSize${execID} (float pointSize) {
+  gl_PointSize = pointSize;
+}`,
+        returnType: `void`,
+        // =-=-=-=-=-=-=-=-=-=
+        ballsIn: [
+          makeBall({ symbol: 'float', label: 'float', style: { 'margin-right': '25px' } })
+        ],
+        ballsOut: [
+        ]
+      })
+      break
+    case 'outputGLFragColor':
+      newObj = makeGroup({
+        root: true,
+        shaderType: 'fragment',
+        type: 'outputGLFragColor',
+        style: getStyle(),
+        // =-=-=-=-=-=-=-=-=-=
+        execID,
+        args: [
+          { type: 'vec4', name: 'color' }
+        ],
+        funcName: `outputGLFragColor${execID}`,
+        code:
+`void outputGLFragColor${execID} (vec4 color) {
+  gl_FragColor = color;
+}`,
+        returnType: `void`,
+        // =-=-=-=-=-=-=-=-=-=
+        ballsIn: [
+          makeBall({ symbol: 'vec4', label: 'color' })
+        ],
+        ballsOut: [
+        ]
+      })
+      break
+    case 'getConstant':
+      newObj = makeGroup({
+        type: 'getConstant',
+        style: getStyle(),
+        // =-=-=-=-=-=-=-=-=-=
+        execID,
+        args: [
+        ],
+        funcName: `getConstant${execID}`,
+        code:
+`float getConstant${execID} () {
+  return 1.0;
+}`,
+        returnType: `float`,
+        // =-=-=-=-=-=-=-=-=-=
+        ballsIn: [
+        ],
+        ballsOut: [
+          makeBall({ symbol: 'float', label: 'float' })
+        ]
+      })
+      break
     case 'getPosition':
       newObj = makeGroup({
         type: 'getPosition',
+        shaderType: 'vertex',
         style: getStyle(),
         // =-=-=-=-=-=-=-=-=-=
         execID,
@@ -195,6 +301,60 @@ export function makeTemplate ({ type }) {
         ],
         ballsOut: [
           makeBall({ symbol: 'vec3', label: 'vec3' })
+        ]
+      })
+      break
+    case 'getVec4':
+      newObj = makeGroup({
+        type: 'getVec4',
+        style: getStyle(),
+        // =-=-=-=-=-=-=-=-=-=
+        execID,
+        args: [
+          { name: 'iX', type: 'float' },
+          { name: 'iY', type: 'float' },
+          { name: 'iZ', type: 'float' },
+          { name: 'iW', type: 'float' }
+        ],
+        funcName: `getVec4${execID}`,
+        code:
+`vec4 getVec4${execID} (float iX, float iY, float iZ, float iW) {
+  return vec4(iX, iY, iZ, iW);
+}`,
+        returnType: `vec4`,
+        // =-=-=-=-=-=-=-=-=-=
+        ballsIn: [
+          makeBall({ symbol: 'float', label: 'float' }),
+          makeBall({ symbol: 'float', label: 'float' }),
+          makeBall({ symbol: 'float', label: 'float' }),
+          makeBall({ symbol: 'float', label: 'float' })
+        ],
+        ballsOut: [
+          makeBall({ symbol: 'vec4', label: 'vec4' })
+        ]
+      })
+      break
+    case 'outputUV':
+      newObj = makeGroup({
+        root: true,
+        shaderType: 'vertex',
+        type: 'outputUV',
+        style: getStyle(),
+        // =-=-=-=-=-=-=-=-=-=
+        execID,
+        args: [
+        ],
+        funcName: `outputUV${execID}`,
+        code:
+`void outputUV${execID} () {
+  vUv = uv;
+}`,
+        returnType: `void`,
+        // =-=-=-=-=-=-=-=-=-=
+        ballsIn: [
+        ],
+        ballsOut: [
+          // makeBall({ symbol: 'vec3', label: 'vec3' })
         ]
       })
       break
