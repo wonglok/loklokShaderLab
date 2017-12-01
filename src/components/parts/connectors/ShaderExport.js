@@ -92,7 +92,8 @@ ${getReturnTypePart({ gp: outputSide, key: outputSide.funcName })}${outputSide.f
       line,
       inputSide,
       outputSide,
-      code
+      code,
+      func: outputSide.code
     }
 
     resolution.unshift(newObj)
@@ -110,8 +111,8 @@ ${getReturnTypePart({ gp: outputSide, key: outputSide.funcName })}${outputSide.f
 }
 
 export const getExecs = ({ connectorGroups, shaderType, connections }) => {
-  var result = (connectorGroups || []).filter((item, array) => {
-    return item.root === true && item.shaderType === shaderType
+  var mainCode = (connectorGroups || []).filter((gpItem, array) => {
+    return gpItem.root === true && (gpItem.shaderType === shaderType)
   }).reduce((accu, gp, key) => {
     var shaderResolves = resovleEquation({ gp, connections, connectorGroups, resolution: [] })
     // console.log(shaderResolves)
@@ -140,7 +141,7 @@ export const getExecs = ({ connectorGroups, shaderType, connections }) => {
     }
   }, '')
 
-  return main({ execution: result }) || ''
+  return main({ execution: mainCode }) || ''
 }
 
 export const getFuncs = ({ connectorGroups, connections, shaderType }) => {

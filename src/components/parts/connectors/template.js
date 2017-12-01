@@ -68,7 +68,7 @@ export function getStyle () {
   }
 }
 
-export function makeTemplate ({ type }) {
+export function makeTemplate ({ type, shaderType }) {
   var newObj
   var execID = '_' + (Math.random() * 10000).toFixed(0)
   switch (type) {
@@ -121,6 +121,7 @@ export function makeTemplate ({ type }) {
     case 'vec3Modifier':
       newObj = makeGroup({
         type: 'vec3Modifier',
+        shaderType,
         style: getStyle(),
         // =-=-=-=-=-=-=-=-=-=
         execID,
@@ -151,6 +152,7 @@ export function makeTemplate ({ type }) {
       break
     case 'vec4Modifier':
       newObj = makeGroup({
+        shaderType,
         type: 'vec4Modifier',
         style: getStyle(),
         // =-=-=-=-=-=-=-=-=-=

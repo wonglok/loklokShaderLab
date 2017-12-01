@@ -60,6 +60,11 @@ export default {
       this.$nextTick(() => {
         this.refreshMaterial()
       })
+    },
+    vs () {
+      this.$nextTick(() => {
+        this.refreshMaterial()
+      })
     }
   },
   methods: {
