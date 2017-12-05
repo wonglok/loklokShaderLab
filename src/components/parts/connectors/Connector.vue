@@ -289,9 +289,9 @@ export default {
 </script>
 
 <style scoped>
-
 .container {
-  transform: perspective(100vmax) translate3d(0,0,0.1px);
+  transform-origin: 0% 0%;
+  transform: perspective(100vmax) translate3d(0,0,-0.1px);
   position: relative;
   width: 100%;
   height: 100%;
@@ -341,6 +341,8 @@ export default {
   position: absolute;
   top: 0px;
   right: 0px;
+
+  user-select: none;
 }
 .stick-middle{
   position: absolute;
@@ -349,7 +351,6 @@ export default {
 }
 
 .code-box{
-  opacity: 1;
   font-size: 12px;
   width: 360px;
   background: rgba(255,255,255,0.9);
@@ -367,11 +368,11 @@ export default {
   background-color: rgba(255,255,255,0.8);
   z-index: 1000;
   position: fixed;
-  top: 556px;
+  top: calc(56px + 350px);
   right: 0px;
   overflow: auto;
-  height: calc(100% - 56px - 500px);
-  width: 500px;
+  height: calc(100% - 56px - 350px);
+  width: 350px;
 }
 
 .emoji{

@@ -5,7 +5,6 @@
     </div>
     <div class="canvas-area" ref="canvas-area">
     </div>
-
   </div>
 </template>
 
@@ -94,15 +93,13 @@ export default {
 
 <style scoped>
 .canvas-area{
+  transform: perspective(100vmax) translate3d(0px,0px,1px);
   z-index: 2000;
   position: fixed;
   top: 56px;
   right: 0px;
-  width: 500px;
-  height: 500px;
-}
-.connectors{
-
+  width: 350px;
+  height: 350px;
 }
 
 </style>
