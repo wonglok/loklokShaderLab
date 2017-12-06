@@ -1,8 +1,9 @@
 <template>
   <div class="hello">
     <!-- <pre>{{ state.src }}</pre> -->
-    <router-link to="/editor">Editor (no DB)</router-link>
-    <router-link to="/shader-gui">Shader GUI (no DB)</router-link>
+    <router-link to="/editor">Editor (no DB)</router-link><br/>
+    <router-link to="/shader-gui">Shader GUI (no DB)</router-link><br/>
+    <router-link to="/shader-svg">Shader SVG (no DB)</router-link><br/>
   </div>
 </template>
 

@@ -4,7 +4,10 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import VueSession from 'vue-session'
+import AsyncComputed from 'vue-async-computed'
+Vue.use(AsyncComputed)
 Vue.use(VueSession)
+
 var VueTouch = require('vue-touch-easyhi')
 Vue.use(VueTouch)
 

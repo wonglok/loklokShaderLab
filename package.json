@@ -25,6 +25,7 @@
     "three": "^0.88.0",
     "uuid": "^3.1.0",
     "vue": "^2.5.2",
+    "vue-async-computed": "^3.3.1",
     "vue-router": "^3.0.1",
     "vue-session": "^0.9.10",
     "vue-touch-easyhi": "^2.0.0",
