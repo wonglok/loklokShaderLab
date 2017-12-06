@@ -27,7 +27,7 @@ export default {
       var endX = this.endX
       var endY = this.endY
 
-      if (startX > endX && startY > endY) {
+      if (startY > endY) {
         startX = this.endX
         startY = this.endY
         endX = this.startX

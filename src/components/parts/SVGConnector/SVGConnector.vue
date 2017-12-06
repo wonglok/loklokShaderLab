@@ -82,7 +82,8 @@
             <textarea :style="{
               appearance: 'none',
               outline: 'none',
-              border: '#bababa solid 1px',
+              border: '#56a0d3 solid 1px',
+              borderRadius: '5px',
               width: funcBox.size.w - 28 + 'px',
               height: '130px'
             }"></textarea>
@@ -275,13 +276,7 @@ export default {
         var y = eOffset.top - offset.top
         var x = eOffset.left - offset.left
         var d = Math.sqrt(x * x + y * y)
-        // if (d < 20) {
-        //   console.table([
-        //     eOffset,
-        //     offset
-        //   ])
-        // }
-        return d < 23.3333
+        return d < 30
       })[0]
 
       if (ans) {
