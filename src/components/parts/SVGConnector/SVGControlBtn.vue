@@ -1,7 +1,7 @@
 <template>
 <g>
-  <circle :cx="0 + 20 + funcBox.size.w - 48 * cid" :cy="0" :r="20" stroke="#56a0d3" fill="rgba(255,255,255,0.9)"  v-touch:pan="onpan" />
-  <text class="ballwords" :x="20 + funcBox.size.w - 48 * cid - 12"  :y="0 + 3" v-touch:pan="onpan">
+  <circle :cx="0 + 20 + funcBox.size.w - 48 * cid" :cy="0" :r="20" stroke="#56a0d3" fill="rgba(255,255,255,1.0)"  v-touch:pan="onpan" v-touch:tap="ontap" />
+  <text class="ballwords" :x="20 + funcBox.size.w - 48 * cid - 12"  :y="0 + 3" v-touch:pan="onpan"  v-touch:tap="ontap">
     <slot></slot>
   </text>
 </g>
@@ -12,6 +12,11 @@ export default {
   props: {
     cid: {
       default: 3
+    },
+    ontap: {
+      default () {
+        return () => {}
+      }
     },
     funcBox: {},
     onpan: {
