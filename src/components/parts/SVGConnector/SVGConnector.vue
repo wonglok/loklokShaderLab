@@ -204,6 +204,12 @@ export default {
     }, 100)
   },
   watch: {
+    timenow (now, last) {
+      var total = this.root.tm.length - 1
+      if (last === total && now !== total) {
+        this.saveTimeCapsule()
+      }
+    },
     shaderANS () {
       this.$emit('shader', this.shaderANS)
     }
@@ -560,7 +566,7 @@ export default {
   bottom: 0px;
   right: 0px;
   width: 350px;
-  height: 500px;
+  height: calc(100vh - 56px - 350px);
   background-color: white;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
