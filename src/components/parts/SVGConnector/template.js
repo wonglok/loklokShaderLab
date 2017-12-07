@@ -174,6 +174,37 @@ export const outputVertex = (config) => {
   })
 }
 
+export const outputPointSize = (config) => {
+  var name = `outputPointSize`
+  var execID = '_' + (Math.random() * 10000).toFixed(0)
+  var funcBoxID = uuidv4()
+  var ballsIn = [
+    getBall({ label: 'float', name: 'size', defaultValue: '0.0', fromBox: funcBoxID, fromBall: uuidv4() })
+  ]
+  var code =
+`void ${name}${execID} (float size) {
+  gl_PointSize = 2.0 + size;
+}`
+  var ballsOut = [
+    getBall({ label: 'void', name: name + execID, defaultValue: '', fromBox: funcBoxID, fromBall: uuidv4() })
+  ]
+
+  return getFuncBox({
+    name,
+    type: 'vertex',
+    boxID: funcBoxID,
+    code,
+    pos: getWinPos(),
+    size: {
+      w: 380,
+      h: 200
+    },
+    ballsIn,
+    ballsOut,
+    ...config
+  })
+}
+
 export const outputUV = (config) => {
   var name = `outputUV`
   var execID = '_' + (Math.random() * 10000).toFixed(0)
@@ -276,7 +307,9 @@ export const getUV = (config) => {
   ]
   var code =
 `vec2 ${name}${execID} () {
-  return vUv;
+  vec2 newUV = uv;
+  // newUV.y += position.y;
+  vUv = newUV;
 }`
   var ballsOut = [
     getBall({ label: 'vec2', name: name + execID, defaultValue: '', fromBox: funcBoxID, fromBall: uuidv4() })
