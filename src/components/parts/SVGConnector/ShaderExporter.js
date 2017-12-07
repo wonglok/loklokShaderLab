@@ -87,6 +87,11 @@ export const buildDeps = ({ box, boxes }) => {
     })
 
     if (collected.length === 0) {
+      resolution = resolution.filter((dep, index, self) =>
+        index === self.findIndex((t) => (
+          t.boxID === dep.boxID
+        ))
+      )
       return resolution
     } else {
       return continueResolve()
@@ -111,8 +116,13 @@ export const getExecCode = ({ boxes = [], type }) => {
   return getRootCode({ boxes, type }).reduce((accu, box, boxIdx) => {
     var funcName = box.ballsOut[0].name
     var rootArgs = box.ballsIn.reduce(getArgsReducer({ box, boxIdx, boxes }), '')
-    var deps = buildDeps({ box, boxes })()
-    accu += `${elaborateDeps({ boxes: deps })}
+    var deps = buildDeps({ box,
+      boxes: boxes
+    })()
+
+    accu += `${elaborateDeps({
+      boxes: deps
+    })}
 `
 
     accu +=
