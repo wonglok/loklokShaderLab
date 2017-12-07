@@ -11,10 +11,12 @@
     </div>
     <div>
       Time Machine:
-      <select v-if="this.root.tm.length > 0" @change="(evt) => { timeTravel(evt.target.value) }" ref="time-machine">
-        <option :value="timeDocIndex" v-for="(timeDoc, timeDocIndex) in this.root.tm">{{ (new Date(timeDoc.date)).toDateString() + ' - ' + (new Date(timeDoc.date)).toTimeString() }}</option>
-      </select>
-      <button @click="saveTimeCapsule">SaveTimeCapsule</button>
+      <input type="range" v-model="timenow" :min="0" :max="this.root.tm.length - 1" v-if="this.root.tm.length > 0" @input="(evt) => { timeTravel(evt.target.value) }" />
+
+      <button @click="saveTimeCapsule({ force: true })">SaveTimeCapsule</button>
+      <transition name="saved">
+        <span v-if="notification.saved">Saved</span>
+      </transition>
       <!-- <button @click="() => { timeTravel($refs['time-machine'].value) }">Time Travel</button> -->
     </div>
     <hr />
@@ -115,7 +117,7 @@
           </div>
         </foreignObject>
 
-        <foreignObject :x="funcBox.size.w - 20 - 130.3" :y="funcBox.size.h - 10" :width="130.3" height="140">
+        <!-- <foreignObject :x="funcBox.size.w - 20 - 130.3" :y="funcBox.size.h - 10" :width="130.3" height="140">
           <div xmlns="http://www.w3.org/1999/xhtml">
             <select :style="{
               //appearance: 'none',
@@ -131,7 +133,7 @@
               <option value="fragment">For Fragment Shader</option>
             </select>
           </div>
-        </foreignObject>
+        </foreignObject> -->
 
       </g>
 
@@ -150,10 +152,14 @@ import * as ShaderExporter from '@/components/parts/SVGConnector/ShaderExporter.
 export default {
   data () {
     return {
+      timenow: 0,
       ready: false,
       Math,
       Date,
       dragging: false,
+      notification: {
+        saved: false
+      },
       fps: {
         lastTime: 0
       },
@@ -179,6 +185,11 @@ export default {
     this.$nextTick(() => {
       this.initDoc()
     }, 100)
+  },
+  watch: {
+    shaderANS () {
+      this.$emit('shader', this.shaderANS)
+    }
   },
   computed: {
     shaderANS () {
@@ -288,17 +299,40 @@ export default {
     }
   },
   methods: {
-    saveTimeCapsule () {
+    checkSaveStatus ({ force }) {
       var past = this.root.tm[this.root.tm.length - 1]
-      if (past) {
-        if (JSON.stringify(past) !== JSON.stringify(this.root.doc)) {
-          this.root.doc.date = new Date()
-          this.root.tm.push(JSON.parse(JSON.stringify(this.root.doc)))
-        }
+      if (
+        (
+          force &&
+          JSON.stringify(this.root.doc) !== JSON.stringify(past)
+        ) ||
+        (
+          (
+            // is not using time machine.
+            (past && this.timenow === (this.root.tm.length - 1)) ||
+            // new
+            (!past && this.root.doc.funcBoxes.length > 0)
+          ) &&
+          (
+            JSON.stringify(this.root.doc) !== JSON.stringify(past)
+          )
+        )
+      ) {
+        return true
       } else {
+        return false
+      }
+    },
+    saveTimeCapsule ({ force }) {
+      if (this.checkSaveStatus({ force })) {
         this.root.doc.date = new Date()
         this.root.tm.push(JSON.parse(JSON.stringify(this.root.doc)))
+        this.timenow = this.root.tm.length - 1
       }
+      this.notification.saved = true
+      setTimeout(() => {
+        this.notification.saved = false
+      }, 1000 * 3)
     },
     timeTravel (idx) {
       var timeDoc = this.root.tm[idx]
@@ -448,18 +482,17 @@ export default {
     initDoc () {
       this.root.doc = Template.getNewDoc()
 
-      //
-
       /* eslint-disable */
-      this.root = //
-      {"doc":{"date":"2017-12-07T02:26:41.533Z","docID":"9ea865d9-a3b7-4157-b118-6c6afe78fc10","funcBoxes":[{"name":"outputVertex","type":"vertex","boxID":"33cd10e5-70b4-43b4-8068-eda84bcee977","code":"void outputVertex_9906 (vec3 position) {\n  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n  vec4 outputPos = projectionMatrix * mvPosition;\n  gl_Position = outputPos;\n}","pos":{"x":45.39534275639608,"y":502.0050914488599},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"position","fromBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","fromBall":"c2462453-84a6-4f2f-ae8d-c7b0804831ae","defaultValue":"vec3(0.0)","toBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","toBall":"be30597d-857d-4c72-bbe3-6700aa4b0338","index":0}],"ballsOut":[{"label":"void","name":"outputVertex_9906","fromBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","fromBall":"9f67e1c9-93aa-4c79-8181-3826b797070a","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true},{"name":"outputFragment","type":"fragment","boxID":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","code":"void outputFragment_2153 (vec4 color) {\n  gl_FragColor = color;\n}","pos":{"x":616.9826612037193,"y":513.3269323257534},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec4","name":"color","fromBox":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","fromBall":"3e4fe58a-a24b-4f76-874d-772f5282f341","defaultValue":"vec4(0.5)","toBox":false,"toBall":false,"index":0}],"ballsOut":[{"label":"void","name":"outputFragment_2153","fromBox":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","fromBall":"285b32da-d838-483f-8d75-c8557f178803","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true},{"name":"vec3Modifier","type":"common","boxID":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","code":"vec3 vec3Modifier_2549 (vec3 v3, float iX, float iY, float iZ) {\n  v3.xyz = v3.xyz + vec3(iX, iY, iZ);\n  return v3;\n}","pos":{"x":46.30722159051839,"y":180.6689499929233},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"v3","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"e680ec40-00db-41ac-bfcd-a948d3c5889e","defaultValue":"vec3(0.0)","toBox":false,"toBall":false,"index":0},{"label":"float","name":"iX","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"a8e97757-54c4-489c-9b9e-a494e92faaa8","defaultValue":"0.0","toBox":false,"toBall":false,"index":1},{"label":"float","name":"iY","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"dd80f753-3e58-47eb-9669-f5e716d01a67","defaultValue":"0.0","toBox":false,"toBall":false,"index":2},{"label":"float","name":"iZ","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"3c4cc218-8b8d-4fe8-8171-77817d684409","defaultValue":"0.0","toBox":false,"toBall":false,"index":3}],"ballsOut":[{"label":"vec3","name":"vec3Modifier_2549","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"be30597d-857d-4c72-bbe3-6700aa4b0338","defaultValue":"vec3(0.0)","toBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","toBall":"c2462453-84a6-4f2f-ae8d-c7b0804831ae","index":0}],"isRoot":false}]},"tm":[{"date":"2017-12-07T02:26:01.534Z","docID":"9ea865d9-a3b7-4157-b118-6c6afe78fc10","funcBoxes":[]},{"date":"2017-12-07T02:26:11.533Z","docID":"9ea865d9-a3b7-4157-b118-6c6afe78fc10","funcBoxes":[{"name":"outputFragment","type":"fragment","boxID":"99f025d9-c27b-4fe6-90f4-9194c3407998","code":"void outputFragment_4900 (vec4 color) {\n  gl_FragColor = color;\n}","pos":{"x":61.48425511395705,"y":131.55951347628704},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec4","name":"color","fromBox":"99f025d9-c27b-4fe6-90f4-9194c3407998","fromBall":"4d9ebfcf-0ec6-44bd-b715-d15f35ffeaab","defaultValue":"vec4(0.5)","toBox":false,"toBall":false,"index":0}],"ballsOut":[{"label":"void","name":"outputFragment_4900","fromBox":"99f025d9-c27b-4fe6-90f4-9194c3407998","fromBall":"24838a44-0023-486a-8cc0-fdd3958086af","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true}]},{"date":"2017-12-07T02:26:21.533Z","docID":"9ea865d9-a3b7-4157-b118-6c6afe78fc10","funcBoxes":[{"name":"outputVertex","type":"vertex","boxID":"33cd10e5-70b4-43b4-8068-eda84bcee977","code":"void outputVertex_9906 (vec3 position) {\n  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n  vec4 outputPos = projectionMatrix * mvPosition;\n  gl_Position = outputPos;\n}","pos":{"x":88.34403855492818,"y":332.86615714228464},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"position","fromBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","fromBall":"c2462453-84a6-4f2f-ae8d-c7b0804831ae","defaultValue":"vec3(0.0)","toBox":false,"toBall":false}],"ballsOut":[{"label":"void","name":"outputVertex_9906","fromBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","fromBall":"9f67e1c9-93aa-4c79-8181-3826b797070a","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true},{"name":"outputFragment","type":"fragment","boxID":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","code":"void outputFragment_2153 (vec4 color) {\n  gl_FragColor = color;\n}","pos":{"x":183.7947658041381,"y":382.56113894822255},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec4","name":"color","fromBox":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","fromBall":"3e4fe58a-a24b-4f76-874d-772f5282f341","defaultValue":"vec4(0.5)","toBox":false,"toBall":false}],"ballsOut":[{"label":"void","name":"outputFragment_2153","fromBox":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","fromBall":"285b32da-d838-483f-8d75-c8557f178803","defaultValue":"","toBox":false,"toBall":false,"index":1}],"isRoot":true}]},{"date":"2017-12-07T02:26:31.534Z","docID":"9ea865d9-a3b7-4157-b118-6c6afe78fc10","funcBoxes":[{"name":"outputVertex","type":"vertex","boxID":"33cd10e5-70b4-43b4-8068-eda84bcee977","code":"void outputVertex_9906 (vec3 position) {\n  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n  vec4 outputPos = projectionMatrix * mvPosition;\n  gl_Position = outputPos;\n}","pos":{"x":104.94026463126754,"y":566.2538658597101},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"position","fromBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","fromBall":"c2462453-84a6-4f2f-ae8d-c7b0804831ae","defaultValue":"vec3(0.0)","toBox":false,"toBall":false}],"ballsOut":[{"label":"void","name":"outputVertex_9906","fromBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","fromBall":"9f67e1c9-93aa-4c79-8181-3826b797070a","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true},{"name":"outputFragment","type":"fragment","boxID":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","code":"void outputFragment_2153 (vec4 color) {\n  gl_FragColor = color;\n}","pos":{"x":676.5275830785907,"y":577.5757067366036},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec4","name":"color","fromBox":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","fromBall":"3e4fe58a-a24b-4f76-874d-772f5282f341","defaultValue":"vec4(0.5)","toBox":false,"toBall":false}],"ballsOut":[{"label":"void","name":"outputFragment_2153","fromBox":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","fromBall":"285b32da-d838-483f-8d75-c8557f178803","defaultValue":"","toBox":false,"toBall":false,"index":1}],"isRoot":true}]},{"date":"2017-12-07T02:26:41.533Z","docID":"9ea865d9-a3b7-4157-b118-6c6afe78fc10","funcBoxes":[{"name":"outputVertex","type":"vertex","boxID":"33cd10e5-70b4-43b4-8068-eda84bcee977","code":"void outputVertex_9906 (vec3 position) {\n  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n  vec4 outputPos = projectionMatrix * mvPosition;\n  gl_Position = outputPos;\n}","pos":{"x":45.39534275639608,"y":502.0050914488599},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"position","fromBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","fromBall":"c2462453-84a6-4f2f-ae8d-c7b0804831ae","defaultValue":"vec3(0.0)","toBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","toBall":"be30597d-857d-4c72-bbe3-6700aa4b0338","index":0}],"ballsOut":[{"label":"void","name":"outputVertex_9906","fromBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","fromBall":"9f67e1c9-93aa-4c79-8181-3826b797070a","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true},{"name":"outputFragment","type":"fragment","boxID":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","code":"void outputFragment_2153 (vec4 color) {\n  gl_FragColor = color;\n}","pos":{"x":616.9826612037193,"y":513.3269323257534},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec4","name":"color","fromBox":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","fromBall":"3e4fe58a-a24b-4f76-874d-772f5282f341","defaultValue":"vec4(0.5)","toBox":false,"toBall":false,"index":0}],"ballsOut":[{"label":"void","name":"outputFragment_2153","fromBox":"86a747a7-92b1-47f8-a1ef-2a4010d3966b","fromBall":"285b32da-d838-483f-8d75-c8557f178803","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true},{"name":"vec3Modifier","type":"common","boxID":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","code":"vec3 vec3Modifier_2549 (vec3 v3, float iX, float iY, float iZ) {\n  v3.xyz = v3.xyz + vec3(iX, iY, iZ);\n  return v3;\n}","pos":{"x":46.30722159051839,"y":180.6689499929233},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"v3","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"e680ec40-00db-41ac-bfcd-a948d3c5889e","defaultValue":"vec3(0.0)","toBox":false,"toBall":false,"index":0},{"label":"float","name":"iX","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"a8e97757-54c4-489c-9b9e-a494e92faaa8","defaultValue":"0.0","toBox":false,"toBall":false,"index":1},{"label":"float","name":"iY","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"dd80f753-3e58-47eb-9669-f5e716d01a67","defaultValue":"0.0","toBox":false,"toBall":false,"index":2},{"label":"float","name":"iZ","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"3c4cc218-8b8d-4fe8-8171-77817d684409","defaultValue":"0.0","toBox":false,"toBall":false,"index":3}],"ballsOut":[{"label":"vec3","name":"vec3Modifier_2549","fromBox":"55cf66cb-4f0c-4c8d-b0ad-0672d0ed9b8d","fromBall":"be30597d-857d-4c72-bbe3-6700aa4b0338","defaultValue":"vec3(0.0)","toBox":"33cd10e5-70b4-43b4-8068-eda84bcee977","toBall":"c2462453-84a6-4f2f-ae8d-c7b0804831ae","index":0}],"isRoot":false}]}]}
+      this.root =
+      {"doc":{"date":"2017-12-07T03:20:46.727Z","docID":"35350e55-325b-40fd-8a58-326d5b8a9682","funcBoxes":[{"name":"vec3Modifier","type":"vertex","boxID":"44f54fde-49fc-4d89-8cdc-3b3252128543","code":"vec3 vec3Modifier_8023 (vec3 v3, float iX, float iY, float iZ) {\n  v3.xyz = v3.xyz + vec3(iX, iY, iZ) + position;\n  return v3;\n}","pos":{"x":48.13978124910892,"y":266.6476154497778},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"v3","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"74fa5caf-7554-4158-8fe3-cfdccd09593d","defaultValue":"vec3(0.0)","toBox":false,"toBall":false,"index":0},{"label":"float","name":"iX","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"a89d64b0-acbe-4a44-95c9-2283a2cd8e01","defaultValue":"0.0","toBox":false,"toBall":false,"index":1},{"label":"float","name":"iY","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"17a26a04-b631-4bfc-a4f6-377db90b1f4d","defaultValue":"0.0","toBox":false,"toBall":false,"index":2},{"label":"float","name":"iZ","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"97bc8b9d-5c8e-47fa-9829-04774d1e6b51","defaultValue":"0.0","toBox":false,"toBall":false,"index":3}],"ballsOut":[{"label":"vec3","name":"vec3Modifier_8023","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"24aa2902-9055-4d45-9320-616e1607fc14","defaultValue":"vec3(0.0)","toBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","toBall":"9ffd1040-a6f0-4b89-85f4-4b1310f98101","index":0}],"isRoot":false},{"name":"outputVertex","type":"vertex","boxID":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","code":"void outputVertex_9353 (vec3 position) {\n  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n  vec4 outputPos = projectionMatrix * mvPosition;\n  gl_Position = outputPos;\n}","pos":{"x":54.47604778510686,"y":557.4420108980106},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"position","fromBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","fromBall":"9ffd1040-a6f0-4b89-85f4-4b1310f98101","defaultValue":"vec3(0.0)","toBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","toBall":"24aa2902-9055-4d45-9320-616e1607fc14","index":0}],"ballsOut":[{"label":"void","name":"outputVertex_9353","fromBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","fromBall":"af65ee50-517f-4663-be28-454584850721","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true},{"name":"outputFragment","type":"fragment","boxID":"6db53061-e7fe-40bf-bbe5-f845a761396f","code":"void outputFragment_4440 (vec4 color) {\n  gl_FragColor = color;\n}","pos":{"x":552.7518683901267,"y":563.0763959726427},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec4","name":"color","fromBox":"6db53061-e7fe-40bf-bbe5-f845a761396f","fromBall":"603b587d-a6bb-403e-9542-d03b1dd643a8","defaultValue":"vec4(0.5)","toBox":false,"toBall":false,"index":0}],"ballsOut":[{"label":"void","name":"outputFragment_4440","fromBox":"6db53061-e7fe-40bf-bbe5-f845a761396f","fromBall":"7cfb9db9-2a27-45ee-ab82-b1a4ea8801c7","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true}]},"tm":[{"date":"2017-12-07T03:20:33.485Z","docID":"35350e55-325b-40fd-8a58-326d5b8a9682","funcBoxes":[{"name":"vec3Modifier","type":"common","boxID":"44f54fde-49fc-4d89-8cdc-3b3252128543","code":"vec3 vec3Modifier_8023 (vec3 v3, float iX, float iY, float iZ) {\n  v3.xyz = v3.xyz + vec3(iX, iY, iZ);\n  return v3;\n}","pos":{"x":40.14841939553341,"y":261.06560585134645},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"v3","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"74fa5caf-7554-4158-8fe3-cfdccd09593d","defaultValue":"vec3(0.0)","toBox":false,"toBall":false},{"label":"float","name":"iX","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"a89d64b0-acbe-4a44-95c9-2283a2cd8e01","defaultValue":"0.0","toBox":false,"toBall":false},{"label":"float","name":"iY","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"17a26a04-b631-4bfc-a4f6-377db90b1f4d","defaultValue":"0.0","toBox":false,"toBall":false},{"label":"float","name":"iZ","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"97bc8b9d-5c8e-47fa-9829-04774d1e6b51","defaultValue":"0.0","toBox":false,"toBall":false}],"ballsOut":[{"label":"vec3","name":"vec3Modifier_8023","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"24aa2902-9055-4d45-9320-616e1607fc14","defaultValue":"vec3(0.0)","toBox":false,"toBall":false,"index":0}],"isRoot":false},{"name":"outputVertex","type":"vertex","boxID":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","code":"void outputVertex_9353 (vec3 position) {\n  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n  vec4 outputPos = projectionMatrix * mvPosition;\n  gl_Position = outputPos;\n}","pos":{"x":103.30757714029768,"y":564.6078261261298},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"position","fromBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","fromBall":"9ffd1040-a6f0-4b89-85f4-4b1310f98101","defaultValue":"vec3(0.0)","toBox":false,"toBall":false}],"ballsOut":[{"label":"void","name":"outputVertex_9353","fromBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","fromBall":"af65ee50-517f-4663-be28-454584850721","defaultValue":"","toBox":false,"toBall":false,"index":1}],"isRoot":true}]},{"date":"2017-12-07T03:20:43.479Z","docID":"35350e55-325b-40fd-8a58-326d5b8a9682","funcBoxes":[{"name":"vec3Modifier","type":"vertex","boxID":"44f54fde-49fc-4d89-8cdc-3b3252128543","code":"vec3 vec3Modifier_8023 (vec3 v3, float iX, float iY, float iZ) {\n  v3.xyz = v3.xyz + vec3(iX, iY, iZ) + ;\n  return v3;\n}","pos":{"x":48.13978124910892,"y":266.6476154497778},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"v3","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"74fa5caf-7554-4158-8fe3-cfdccd09593d","defaultValue":"vec3(0.0)","toBox":false,"toBall":false,"index":0},{"label":"float","name":"iX","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"a89d64b0-acbe-4a44-95c9-2283a2cd8e01","defaultValue":"0.0","toBox":false,"toBall":false,"index":1},{"label":"float","name":"iY","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"17a26a04-b631-4bfc-a4f6-377db90b1f4d","defaultValue":"0.0","toBox":false,"toBall":false,"index":2},{"label":"float","name":"iZ","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"97bc8b9d-5c8e-47fa-9829-04774d1e6b51","defaultValue":"0.0","toBox":false,"toBall":false,"index":3}],"ballsOut":[{"label":"vec3","name":"vec3Modifier_8023","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"24aa2902-9055-4d45-9320-616e1607fc14","defaultValue":"vec3(0.0)","toBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","toBall":"9ffd1040-a6f0-4b89-85f4-4b1310f98101","index":0}],"isRoot":false},{"name":"outputVertex","type":"vertex","boxID":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","code":"void outputVertex_9353 (vec3 position) {\n  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n  vec4 outputPos = projectionMatrix * mvPosition;\n  gl_Position = outputPos;\n}","pos":{"x":54.47604778510686,"y":557.4420108980106},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"position","fromBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","fromBall":"9ffd1040-a6f0-4b89-85f4-4b1310f98101","defaultValue":"vec3(0.0)","toBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","toBall":"24aa2902-9055-4d45-9320-616e1607fc14","index":0}],"ballsOut":[{"label":"void","name":"outputVertex_9353","fromBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","fromBall":"af65ee50-517f-4663-be28-454584850721","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true}]},{"date":"2017-12-07T03:20:46.727Z","docID":"35350e55-325b-40fd-8a58-326d5b8a9682","funcBoxes":[{"name":"vec3Modifier","type":"vertex","boxID":"44f54fde-49fc-4d89-8cdc-3b3252128543","code":"vec3 vec3Modifier_8023 (vec3 v3, float iX, float iY, float iZ) {\n  v3.xyz = v3.xyz + vec3(iX, iY, iZ) + position;\n  return v3;\n}","pos":{"x":48.13978124910892,"y":266.6476154497778},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"v3","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"74fa5caf-7554-4158-8fe3-cfdccd09593d","defaultValue":"vec3(0.0)","toBox":false,"toBall":false,"index":0},{"label":"float","name":"iX","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"a89d64b0-acbe-4a44-95c9-2283a2cd8e01","defaultValue":"0.0","toBox":false,"toBall":false,"index":1},{"label":"float","name":"iY","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"17a26a04-b631-4bfc-a4f6-377db90b1f4d","defaultValue":"0.0","toBox":false,"toBall":false,"index":2},{"label":"float","name":"iZ","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"97bc8b9d-5c8e-47fa-9829-04774d1e6b51","defaultValue":"0.0","toBox":false,"toBall":false,"index":3}],"ballsOut":[{"label":"vec3","name":"vec3Modifier_8023","fromBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","fromBall":"24aa2902-9055-4d45-9320-616e1607fc14","defaultValue":"vec3(0.0)","toBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","toBall":"9ffd1040-a6f0-4b89-85f4-4b1310f98101","index":0}],"isRoot":false},{"name":"outputVertex","type":"vertex","boxID":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","code":"void outputVertex_9353 (vec3 position) {\n  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );\n  vec4 outputPos = projectionMatrix * mvPosition;\n  gl_Position = outputPos;\n}","pos":{"x":54.47604778510686,"y":557.4420108980106},"size":{"w":380,"h":200},"ballsIn":[{"label":"vec3","name":"position","fromBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","fromBall":"9ffd1040-a6f0-4b89-85f4-4b1310f98101","defaultValue":"vec3(0.0)","toBox":"44f54fde-49fc-4d89-8cdc-3b3252128543","toBall":"24aa2902-9055-4d45-9320-616e1607fc14","index":0}],"ballsOut":[{"label":"void","name":"outputVertex_9353","fromBox":"4bcff6eb-200c-4e9a-9e79-97c1505864f5","fromBall":"af65ee50-517f-4663-be28-454584850721","defaultValue":"","toBox":false,"toBall":false,"index":0}],"isRoot":true}]}]}
+      this.timenow = this.root.tm.length - 1
       /* eslint-enable */
 
       this.$nextTick(() => {
         this.ready = true
 
         setInterval(() => {
-          this.saveTimeCapsule()
+          this.saveTimeCapsule({ force: false })
         }, 1000 * 10)
       })
     },
@@ -490,6 +523,13 @@ export default {
   background-color: white;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
+}
+
+.saved-enter-active, .saved-leave-active {
+  transition: opacity .5s
+}
+.saved-enter, .saved-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0
 }
 
 </style>

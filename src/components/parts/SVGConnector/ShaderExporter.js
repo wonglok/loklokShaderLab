@@ -68,6 +68,7 @@ export const buildDeps = ({ box, boxes }) => {
   var boxCursor = box
   return function continueResolve () {
     var collected = []
+    boxCursor.type = box.type
     boxCursor.ballsIn.filter((ball) => {
       return ball.toBox && ball.toBall
     }).forEach((ball) => {
