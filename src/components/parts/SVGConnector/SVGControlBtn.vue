@@ -1,6 +1,6 @@
 <template>
 <g>
-  <circle :cx="0 + 20 + funcBox.size.w - 48 * cid" :cy="0" :r="20" stroke="#56a0d3" fill="rgba(255,255,255,1.0)"  v-touch:pan="onpan" v-touch:tap="ontap" />
+  <circle :cx="0 + 20 + funcBox.size.w - 48 * cid" :cy="0" :r="20" :stroke="color" fill="rgba(255,255,255,1.0)"  v-touch:pan="onpan" v-touch:tap="ontap" />
   <text class="ballwords" :x="20 + funcBox.size.w - 48 * cid - 12"  :y="0 + 3" v-touch:pan="onpan"  v-touch:tap="ontap">
     <slot></slot>
   </text>
@@ -10,6 +10,9 @@
 <script>
 export default {
   props: {
+    color: {
+      default: '#5690d3'
+    },
     cid: {
       default: 3
     },

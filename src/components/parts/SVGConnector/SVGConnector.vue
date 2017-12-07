@@ -2,9 +2,9 @@
   <div>
     <div class="debug-console">
       <h1>VertexShader</h1>
-      <pre>{{ shaderANS.vs }}</pre>
+      <pre class="vs-code">{{ shaderANS.vs }}</pre>
       <h1>FragmentShader</h1>
-      <pre>{{ shaderANS.fs }}</pre>
+      <pre class="fs-code">{{ shaderANS.fs }}</pre>
     </div>
     <div class="toolbar-taller"></div>
     <div class="toolbar">
@@ -41,19 +41,21 @@
         v-if="dragging"
         :startX="dragging.startX" :startY="dragging.startY"
         :endX="dragging.endX" :endY="dragging.endY"
-        :seed="0.5" />
+        :seed="0.5"
+        :stroke="'#bababa'"
+      />
 
       <circle
         v-if="dragging"
         :cx="dragging.endX"
         :cy="dragging.endY"
         :r="17"
-        fill="#56a0d3"
+        fill="#bababa"
       />
 
       <g v-for="(conn, index) in connections">
         <SVGPath
-        stroke="#56a0d3"
+        :stroke="'#bababa'"
         :startX="conn.startX" :startY="conn.startY"
         :endX="conn.endX" :endY="conn.endY"
         :seed="Math.max(0.3, Math.min(index / connections.length * 0.7, 0.7))" />
@@ -61,10 +63,11 @@
 
       <!-- BOX -->
       <g :transform="getFuncBoxTrans(funcBox)" :key="funcBoxIdx" v-for="(funcBox, funcBoxIdx) in root.doc.funcBoxes" v-if="root.doc.funcBoxes">
-        <rect :width="funcBox.size.w" :height="funcBox.size.h" stroke="#56a0d3" fill="rgba(255,255,255,0.8)" />
+        <rect :width="funcBox.size.w" :height="funcBox.size.h" :stroke="shaderLineColor(funcBox)" fill="rgba(255,255,255,0.8)" />
 
         <!-- Contorl1 -->
         <SVGControlBtn
+          :color="shaderLineColor(funcBox)"
           :cid="3"
           :funcBox="funcBox"
           :onpan="(evt) => { onPan(evt, funcBox) }"
@@ -74,6 +77,7 @@
 
         <!-- Contorl2 -->
         <SVGControlBtn
+          :color="shaderLineColor(funcBox)"
           :cid="2"
           :funcBox="funcBox"
           :onpan="(evt) => { onPanAll(evt, root.doc.funcBoxes) }"
@@ -83,6 +87,7 @@
 
         <!-- Control3 -->
         <SVGControlBtn
+          :color="shaderLineColor(funcBox)"
           :cid="1"
           :funcBox="funcBox"
           :onpan="(evt) => {  }"
@@ -98,7 +103,7 @@
            v-touch:panmove="(evt) => { connectBallMove(evt, ballIn, ballInIndex) }"
            v-touch:panend="(evt) => { connectBallEndR(evt, ballIn, ballInIndex) }"
            v-touch:tap="() => { breakUpBallsAt(ballIn) }"
-           :cy="0" :r="20" fill="white" :stroke="'#56a0d3'">
+           :cy="0" :r="20" fill="white" :stroke="shaderLineColor(funcBox)">
           </circle>
         </g>
 
@@ -110,16 +115,18 @@
            v-touch:panmove="(evt) => { connectBallMove(evt, ballOut, ballOutIndex) }"
            v-touch:panend="(evt) => { connectBallEnd(evt, ballOut, ballOutIndex) }"
            v-touch:tap="() => { breakUpBallsAt(ballOut) }"
-           :cy="funcBox.size.h" :r="20" fill="white" :stroke="'#56a0d3'">
+           :cy="funcBox.size.h" :r="20" fill="white" :stroke="shaderLineColor(funcBox)">
           </circle>
         </g>
 
         <foreignObject :x="10" :y="35" :width="funcBox.size.w" height="140">
           <div xmlns="http://www.w3.org/1999/xhtml">
-            <textarea :style="{
+            <textarea
+            spellcheck="false"
+            :style="{
               appearance: 'none',
               outline: 'none',
-              border: '#56a0d3 solid 1px',
+              border: shaderLineColor(funcBox) + ' solid 1px',
               borderRadius: '5px',
               width: funcBox.size.w - 28 + 'px',
               height: '130px'
@@ -202,6 +209,7 @@ export default {
     }
   },
   computed: {
+
     shaderANS () {
       return this.calcShader()
     },
@@ -308,6 +316,9 @@ export default {
     }
   },
   methods: {
+    shaderLineColor (funcBox) {
+      return funcBox.type === 'vertex' ? '#189892' : '#62a719'
+    },
     checkSaveStatus ({ force }) {
       var past = this.root.tm[this.root.tm.length - 1]
       if (
@@ -434,11 +445,16 @@ export default {
     },
     getConnetionFilter (offset) {
       return (eBall) => {
-        var eOffset = this.offset(this.$refs['ball' + eBall.fromBall][0])
-        var y = eOffset.top - offset.top
-        var x = eOffset.left - offset.left
-        var d = Math.sqrt(x * x + y * y)
-        return d < 30
+        try {
+          var el = this.$refs['ball' + eBall.fromBall][0]
+          var eOffset = this.offset(el)
+          var y = eOffset.top - offset.top
+          var x = eOffset.left - offset.left
+          var d = Math.sqrt(x * x + y * y)
+          return d < 30
+        } catch (e) {
+          return false
+        }
       }
     },
     connectBallEnd (evt, ball) {
@@ -568,6 +584,13 @@ export default {
   background-color: white;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
+}
+
+.vs-code{
+  color: #189892;
+}
+.fs-code{
+  color: #62a719;
 }
 
 </style>
