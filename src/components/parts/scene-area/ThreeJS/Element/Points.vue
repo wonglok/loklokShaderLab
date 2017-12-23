@@ -8,6 +8,9 @@
 <script>
 import * as THREE from 'three'
 export default {
+  props: {
+    position: {}
+  },
   data () {
     return {
       points: false,
