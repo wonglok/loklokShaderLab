@@ -4,6 +4,7 @@
     <router-link to="/editor">Editor (no DB)</router-link><br/>
     <router-link to="/shader-gui">Shader GUI (no DB)</router-link><br/>
     <router-link to="/shader-svg">Shader SVG (no DB)</router-link><br/>
+    <router-link to="/scene-builder">SceneBuilder (no DB)</router-link><br/>
   </div>
 </template>
 

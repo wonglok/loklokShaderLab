@@ -4,6 +4,7 @@ import Hello from '@/components/Hello'
 import Editor from '@/components/pages/editor/Editor.vue'
 import ShaderGUI from '@/components/pages/shader-gui/ShaderGUI.vue'
 import ShaderSVG from '@/components/pages/shader-svg/ShaderSVG.vue'
+import SceneBuilder from '@/components/pages/scene-builder/SceneBuilder.vue'
 
 Vue.use(Router)
 
@@ -13,6 +14,10 @@ export default new Router({
     {
       path: '/',
       component: Hello
+    },
+    {
+      path: '/scene-builder',
+      component: SceneBuilder
     },
     {
       path: '/shader-gui',
