@@ -117,7 +117,7 @@ void main ( void ) {
 
   // modify here
   vec3 finalPos = position;
-  finalPos.y += sin(time * 2.0 + uv.y);
+  finalPos.y += sin(time * 2.0 + position.y);
 
   vec4 mvPosition = modelViewMatrix * vec4( finalPos, 1.0 );
   vec4 outputPos = projectionMatrix * mvPosition;

@@ -2,6 +2,14 @@
   <div>
     <div :key="iFX" v-for="(fx, iFX) in shaderFXs">
       <button @click="iFXnow = iFX">edit</button><input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.py" />
+      <select v-model="fx.elementType">
+        <option value="Mesh">Mesh</option>
+        <option value="Points">Points</option>
+      </select>
+      <select v-model="fx.geometry">
+        <option value="SphereBufferGeometry">SphereBufferGeometry</option>
+        <option value="BoxBufferGeometry">BoxBufferGeometry</option>
+      </select>
     </div>
     <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.vs"></textarea>
     <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.fs"></textarea>
@@ -43,6 +51,8 @@ export default {
   created () {
     var shader = this.shader('abc')
     this.doc.current.shaderFXs.push({
+      elementType: 'Points',
+      geometry: 'SphereBufferGeometry',
       px: 0,
       py: 0,
       pz: -10,

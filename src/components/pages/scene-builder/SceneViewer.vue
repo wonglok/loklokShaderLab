@@ -22,10 +22,10 @@
       <Object3D :pz="fx.pz" :py="fx.py" :px="fx.px" :key="iFX" v-for="(fx, iFX) in shaderFXs">
         <Object3D>
           <Object3D>
-            <Points>
-              <SphereBufferGeometry />
+            <component v-bind:is="fx.elementType">
+              <component v-bind:is="fx.geometry" />
               <ShaderMaterial :uniforms="fx.shader.uniforms" :vs="fx.shader.vs" :fs="fx.shader.fs" />
-            </Points>
+            </component>
           </Object3D>
         </Object3D>
       </Object3D>
