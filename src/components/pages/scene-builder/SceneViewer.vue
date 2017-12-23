@@ -11,23 +11,29 @@
     <PerspectiveCamera
       :fov="75"
       :aspect="size.aspect"
-      :near="1"
+      :near="0.1"
       :far="1000"
-      :position="{ x: 0, y: 0, z: 10 }"
+      :position="{ x: 0, y: 0, z: 5 }"
       @camera="(v) => { camera = v; }"
     />
 
     <Scene @scene="(v) => { scene = v }">
 
-      <Object3D :pz="fx.pz" :py="fx.py" :px="fx.px" :key="iFX" v-for="(fx, iFX) in shaderFXs">
-        <Object3D>
-          <Object3D>
-            <component v-bind:is="fx.elementType">
+      <Object3D
+        :pz="fx.p.z" :py="fx.p.y" :px="fx.p.x"
+        :rz="fx.r.z" :ry="fx.r.y" :rx="fx.r.x"
+        :sz="fx.s.z" :sy="fx.s.y" :sx="fx.s.x"
+
+        :key="iFX" v-for="(fx, iFX) in shaderFXs"
+      >
+        <!-- <Object3D> -->
+          <!-- <Object3D> -->
+            <component v-bind:is="fx.elementType" :ref="'el-' + iFX">
               <component v-bind:is="fx.geometry" />
               <ShaderMaterial :uniforms="fx.shader.uniforms" :vs="fx.shader.vs" :fs="fx.shader.fs" />
             </component>
-          </Object3D>
-        </Object3D>
+          <!-- </Object3D> -->
+        <!-- </Object3D> -->
       </Object3D>
 
     </Scene>
@@ -42,6 +48,7 @@ export default {
     ...Bundle
   },
   props: {
+    using: {},
     doc: {}
   },
   computed: {
@@ -49,18 +56,42 @@ export default {
       return this.doc.current.shaderFXs
     }
   },
+  watch: {
+    using () {
+      this.resizer()
+    }
+  },
   methods: {
     renderWebGL () {
-      this.shaderFXs.forEach((fx) => {
-        fx.shader.run()
-      })
+      this.funcRunner()
       if (this.scene && this.camera && this.renderer) {
         this.renderer.render(this.scene, this.camera)
       }
+    },
+    funcRunner () {
+      this.shaderFXs.forEach((fx, iFX) => {
+        if (fx.shader.run && fx.shader.run.toString().indexOf(fx.shader.updateFn) !== -1) {
+          fx.shader.run()
+        } else {
+          try {
+            /* eslint-disable */
+            fx.shader.update = new Function('uniforms', 'element', fx.shader.updateFn)
+            /* eslint-enable */
+          } catch (e) {
+            console.log(e)
+          }
+          // console.log(this.$refs['el-' + iFX][0])
+          fx.shader.run = () => {
+            fx.shader.update(fx.shader.uniforms, this.$refs['el-' + iFX][0].element)
+          }
+          fx.shader.run()
+        }
+      })
     }
   },
   data () {
     return {
+      resizer: () => {},
       size: {
         width: 100,
         height: 100,
@@ -75,7 +106,7 @@ export default {
 
   },
   mounted () {
-    var resizer = () => {
+    var resizer = this.resizer = () => {
       var rect = this.$refs.full.getBoundingClientRect()
       this.$nextTick(() => {
         this.size = {
@@ -85,7 +116,7 @@ export default {
         }
       })
     }
-    window.addEventListener('resize', resizer)
+    window.addEventListener('resize', resizer.bind(this))
     resizer()
 
     var self = this
@@ -94,6 +125,9 @@ export default {
       self.renderWebGL()
     }
     self.rAFID = window.requestAnimationFrame(loop)
+  },
+  beforeDestroy () {
+    window.cancelAnimationFrame(this.rAFID)
   }
 }
 </script>

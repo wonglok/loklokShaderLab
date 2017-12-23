@@ -1,7 +1,11 @@
 <template>
   <div>
+    <div class="svg-connector" v-show="useShaderEditor">
+      <SVGConnector @close="() => { useShaderEditor = false }" @shader="(v) => { currentShader = v }" />
+      <SceneViewer v-if="useShaderEditor" :using="useShaderEditor" class="top-right" :doc="doc"></SceneViewer>
+    </div>
     <div :key="iFX" v-for="(fx, iFX) in shaderFXs">
-      <button @click="iFXnow = iFX">edit</button><input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.py" />
+      <button @click="iFXnow = iFX; useShaderEditor = true">edit</button><input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.p.y" />
       <select v-model="fx.elementType">
         <option value="Mesh">Mesh</option>
         <option value="Points">Points</option>
@@ -11,58 +15,85 @@
         <option value="BoxBufferGeometry">BoxBufferGeometry</option>
       </select>
     </div>
-    <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.vs"></textarea>
-    <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.fs"></textarea>
-    <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.updateFn" @input="() => { updateShader(shaderFXs[iFXnow].shader) }"></textarea>
+
+    <!-- <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.vs"></textarea>
+    <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.fs"></textarea> -->
+    <textarea class="kinda-full" v-model="shaderFXs[iFXnow].shader.updateFn"></textarea>
   </div>
 </template>
 
 <script>
-import * as Vuex from 'vuex'
+import SVGConnector from '@/components/parts/SVGConnector/SVGConnector.vue'
+import SceneViewer from './SceneViewer.vue'
+import * as Data from './Data.js'
+
+// import * as Vuex from 'vuex'
 export default {
+  components: {
+    SVGConnector,
+    SceneViewer
+  },
   data () {
     return {
+      useShaderEditor: false,
+      currentShader: false,
       iFXnow: 0
     }
   },
   props: {
     doc: {}
   },
+  watch: {
+    currentShader () {
+      if (this.currentShader) {
+        this.shaderFXs[this.iFXnow].shader.fs = this.currentShader.fs
+        this.shaderFXs[this.iFXnow].shader.vs = this.currentShader.vs
+      }
+    }
+  },
   computed: {
     shaderFXs () {
       return this.doc.current.shaderFXs
-    },
-    ...Vuex.mapGetters({
-      'shader': 'shaders/shader',
-      'shaders': 'shaders/shaders'
-    })
+    }
+    // ...Vuex.mapGetters({
+    //   'shader': 'shaders/shader',
+    //   'shaders': 'shaders/shaders'
+    // })
   },
   methods: {
-    ...Vuex.mapActions({
-      'saveJSON': 'shaders/saveJSON',
-      'restoreJSON': 'shaders/restoreJSON'
-    }),
-    ...Vuex.mapMutations({
-      'updateShader': 'shaders/update',
-      'addShader': 'shaders/add',
-      'removeShader': 'shaders/remove'
-    })
+    // ...Vuex.mapActions({
+    //   'saveJSON': 'shaders/saveJSON',
+    //   'restoreJSON': 'shaders/restoreJSON'
+    // }),
+    // ...Vuex.mapMutations({
+    //   'updateShader': 'shaders/update',
+    //   'addShader': 'shaders/add',
+    //   'removeShader': 'shaders/remove'
+    // })
+    makeNewBall () {
+      this.doc.current.shaderFXs.push(Data.makeBall())
+    },
+    makeNewBox () {
+
+    }
   },
   created () {
-    var shader = this.shader('abc')
-    this.doc.current.shaderFXs.push({
-      elementType: 'Points',
-      geometry: 'SphereBufferGeometry',
-      px: 0,
-      py: 0,
-      pz: -10,
-      shader
-    })
+    this.makeNewBall()
   }
 }
 </script>
 
 <style scoped>
+.top-right{
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  width: 350px;
+  height: 350px;
+}
+.taller{
+  height: 260px;
+}
 .full{
   height: 100%;
 }
@@ -72,5 +103,15 @@ export default {
 .some-full{
   width: 100%;
   height: 30%;
+}
+.kinda-full{
+  width: 100%;
+  height: 10%;
+}
+.svg-connector{
+  position: fixed;
+  overflow: scroll;
+  width: 100%;
+  height: 100%;
 }
 </style>

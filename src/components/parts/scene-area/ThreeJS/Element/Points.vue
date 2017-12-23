@@ -13,13 +13,14 @@ export default {
   },
   data () {
     return {
+      element: false,
       points: false,
       material: false,
       geometry: false
     }
   },
   created () {
-    this.points = new THREE.Points()
+    this.element = this.points = new THREE.Points()
     this.$parent.$emit('add', this.points)
 
     this.$on('material', (v) => {
