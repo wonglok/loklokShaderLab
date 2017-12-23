@@ -20,17 +20,17 @@
     <Scene @scene="(v) => { scene = v }">
       <PointLight />
 
-      <Object3D :pz="-10">
+      <!-- <Object3D :pz="-10">
         <Points>
           <SphereBufferGeometry />
           <MeshBasicMaterial :color="0xff00ff" :opacity="1" />
         </Points>
-      </Object3D>
+      </Object3D> -->
 
-      <Object3D :pz="fx.pz" :key="iFX" v-for="(fx, iFX) in shaderFunz">
+      <Object3D :pz="fx.pz" :key="iFX" v-for="(fx, iFX) in shaderFXs">
         <Points :ref="'pts-' + iFX">
           <SphereBufferGeometry />
-          <ShaderMaterial :uniforms="fx.uniforms" :vs="fx.glsl.vs" :fs="fx.glsl.fs" />
+          <ShaderMaterial :uniforms="fx.uniforms" :vs="fx.vs" :fs="fx.fs" />
         </Points>
       </Object3D>
 
@@ -40,48 +40,48 @@
 </template>
 
 <script>
+import * as Vuex from 'vuex'
 import Bundle from './ThreeJS/Bundle'
 export default {
   components: {
     ...Bundle
   },
+  computed: {
+    ...Vuex.mapGetters({
+      'shader': 'shaders/shader',
+      'shaders': 'shaders/shaders'
+    })
+  },
+  methods: {
+    ...Vuex.mapActions({
+      'saveJSON': 'shaders/saveJSON',
+      'restoreJSON': 'shaders/restoreJSON'
+    }),
+    ...Vuex.mapMutations({
+      'addShader': 'shaders/add',
+      'removeShader': 'shaders/remove'
+    }),
+    renderWebGL () {
+      this.shaderFXs.forEach((fx) => {
+        fx.run()
+      })
+      if (this.scene && this.camera && this.renderer) {
+        this.renderer.render(this.scene, this.camera)
+      }
+    },
+    addFx (shaderID) {
+      this.addShader({
+        id: shaderID
+      })
+      this.shaderFXs.push({
+        pz: -5,
+        ...this.shader(shaderID)
+      })
+    }
+  },
   data () {
-    var vs =
-`
-uniform float time;
-varying vec2 vUv;
-void main ( void ) {
-  vUv = uv;
-  vec3 finalPos = position;
-  finalPos.y += sin(position.y + time);
-  vec4 mvPosition = modelViewMatrix * vec4( finalPos, 1.0 );
-  vec4 outputPos = projectionMatrix * mvPosition;
-  gl_Position = outputPos;
-  gl_PointSize = 1.5;
-}`
-    var fs =
-`varying vec2 vUv;
-void main () {
-  gl_FragColor = vec4(vec3(vUv,0.5), 1.0);
-}`
-
     return {
-      shaderFunz: [
-        {
-          pz: -5,
-          uniforms: {
-            time: { value: 0 }
-          },
-          glsl: { vs, fs }
-        },
-        {
-          pz: -10,
-          uniforms: {
-            time: { value: 0 }
-          },
-          glsl: { vs, fs }
-        }
-      ],
+      shaderFXs: [],
       size: {
         width: window.innerWidth,
         height: window.innerHeight,
@@ -93,7 +93,10 @@ void main () {
     }
   },
   created () {
-
+    this.shaderFXs.push({
+      pz: -10,
+      ...this.shader('abc')
+    })
   },
   mounted () {
     var self = this
@@ -102,17 +105,6 @@ void main () {
       self.renderWebGL()
     }
     self.rAFID = window.requestAnimationFrame(loop)
-  },
-  methods: {
-    renderWebGL () {
-      this.shaderFunz.forEach((fx) => {
-        fx.uniforms.time.value = window.performance.now() / 1000
-      })
-
-      if (this.scene && this.camera && this.renderer) {
-        this.renderer.render(this.scene, this.camera)
-      }
-    }
   }
 }
 </script>

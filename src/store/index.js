@@ -2,28 +2,28 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 // import firebase from '@/firebase'
 // import router from '@/router'
-import sites from './sites'
+import shaders from './shaders'
 
 // import { firebaseMutations } from 'vuexfire'
 
 Vue.use(Vuex)
 
 var state = {
-  loading: false,
-  user: null
+  // loading: false,
+  // user: null
 }
 
 var mutations = {
   // ...firebaseMutations,
-  setUser (state, value) {
-    state.user = value
-  }
+  // setUser (state, value) {
+  //   state.user = value
+  // }
 }
 
 var getters = {
-  currentUser (state) {
-    return state.user
-  }
+  // currentUser (state) {
+  //   return state.user
+  // }
 }
 
 var actions = {
@@ -70,6 +70,6 @@ const store = new Vuex.Store({
   plugins: [onAuthChange]
 })
 
-sites.use(store)
+shaders.use(store)
 
 export default store

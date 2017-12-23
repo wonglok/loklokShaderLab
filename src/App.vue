@@ -1,13 +1,6 @@
 <template>
   <div id="app">
-    <header class="header">
-      <router-link to="/" tag="span">Lok Lok Shader Editing Helper</router-link>
-      <span>No DB yet. Work in progress. <a class="todo" target="_blank" href="https://docs.google.com/document/d/1tfKqN32Idr6QphLVCSCzAE918Aj-J30WR3ITV4bvXXg/edit">Todo List.</a></span>
-    </header>
-    <div class="taller"></div>
-    <main>
-      <router-view></router-view>
-    </main>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -17,9 +10,13 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+html, body {
+  height: 100%;
+}
 
 #app {
+  height: 100%;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

@@ -19,23 +19,30 @@ export default {
     }
   },
   created () {
+    this.points = new THREE.Points()
+    this.$parent.$emit('add', this.points)
+
     this.$on('material', (v) => {
       this.material = v
-      this.tryAdd()
+      this.tryUpdateMaterial()
     })
     this.$on('geometry', (v) => {
       this.geometry = v
-      this.tryAdd()
+      this.tryUpdateGeometry()
     })
   },
   beforeDestroy () {
     this.uninstall()
   },
   methods: {
-    tryAdd () {
-      if (this.geometry && this.material) {
-        this.points = new THREE.Points(this.geometry, this.material)
-        this.$parent.$emit('add', this.points)
+    tryUpdateGeometry (v) {
+      if (this.points) {
+        this.points.geometry = this.geometry
+      }
+    },
+    tryUpdateMaterial (v) {
+      if (this.points) {
+        this.points.material = this.material
       }
     },
     uninstall () {

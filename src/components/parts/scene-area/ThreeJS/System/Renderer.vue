@@ -22,6 +22,7 @@ export default {
       antialias: this.antialias
     })
     this.resize()
+    this.renderer.domElement.style.marginBottom = '-6px'
     this.$refs.mounter.appendChild(this.renderer.domElement)
     this.$emit('renderer', this.renderer)
   },

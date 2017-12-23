@@ -41,14 +41,18 @@ export default {
   },
   methods: {
     initShader () {
-      this.material = new THREE.ShaderMaterial({
-        uniforms: {
-          ...this.uniforms
-        },
-        vertexShader: this.vs,
-        fragmentShader: this.fs
-      })
-      this.$parent.$emit('material', this.material)
+      try {
+        this.material = new THREE.ShaderMaterial({
+          uniforms: {
+            ...this.uniforms
+          },
+          vertexShader: this.vs,
+          fragmentShader: this.fs
+        })
+        this.$parent.$emit('material', this.material)
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }
