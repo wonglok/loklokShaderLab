@@ -6,27 +6,38 @@ const state = {
   shaders: []
 }
 
+function hydrateUpdater (info) {
+  /* eslint-disable */
+  info.update = new Function('uniforms', info.updateFn)
+  info.run = () => {
+    info.update(info.uniforms)
+  }
+  /* eslint-enable */
+  return info
+}
+
 const getters = {
   shaders () {
     return state.shaders.map((info) => {
-      /* eslint-disable */
-      info.update = new Function('uniforms', info.updateFn)
-      info.run = () => {
-        info.update(info.uniforms)
-      }
-      /* eslint-enable */
+      info = hydrateUpdater(info)
       return info
     })
   },
   shader (state, getters) {
     return (sID) => {
       var info = getters.shaders.find((sdr) => { return sdr.id === sID })
+      info = hydrateUpdater(info)
       return info
     }
   }
 }
 
 const mutations = {
+  update (state, payload) {
+    var array = state.shaders
+    var index = state.shaders.findIndex(e => e.id === payload.id)
+    array[index] = hydrateUpdater(payload)
+  },
   add (state, payload) {
     state.shaders.push(newShader(payload))
   },

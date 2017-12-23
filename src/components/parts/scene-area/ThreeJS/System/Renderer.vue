@@ -1,5 +1,5 @@
 <template>
-  <div ref="mounter"></div>
+  <div class="full" ref="mounter"></div>
 </template>
 
 <script>
@@ -44,6 +44,9 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.full{
+  width: 100%;
+  height: 100%;
+}
 </style>

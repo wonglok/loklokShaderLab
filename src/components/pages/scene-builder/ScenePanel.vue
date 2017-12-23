@@ -1,16 +1,22 @@
 <template>
-  <div class="full">
+  <div>
     <div :key="iFX" v-for="(fx, iFX) in shaderFXs">
-      <input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.pz" />
+      <button @click="iFXnow = iFX">edit</button><input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.py" />
     </div>
-    <textarea class="half-full" v-model="shaderFXs[0].vs"></textarea>
-    <textarea class="half-full" v-model="shaderFXs[0].fs"></textarea>
+    <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.vs"></textarea>
+    <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.fs"></textarea>
+    <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.updateFn" @input="() => { updateShader(shaderFXs[iFXnow].shader) }"></textarea>
   </div>
 </template>
 
 <script>
 import * as Vuex from 'vuex'
 export default {
+  data () {
+    return {
+      iFXnow: 0
+    }
+  },
   props: {
     doc: {}
   },
@@ -29,35 +35,18 @@ export default {
       'restoreJSON': 'shaders/restoreJSON'
     }),
     ...Vuex.mapMutations({
+      'updateShader': 'shaders/update',
       'addShader': 'shaders/add',
       'removeShader': 'shaders/remove'
-    }),
-    addFx (shaderID) {
-      this.addShader({
-        id: shaderID
-      })
-      this.shaderFXs.push({
-        pz: -5,
-        ...this.shader(shaderID)
-      })
-    }
+    })
   },
   created () {
+    var shader = this.shader('abc')
     this.doc.current.shaderFXs.push({
+      px: 0,
+      py: 0,
       pz: -10,
-      ...this.shader('abc')
-    })
-    this.doc.current.shaderFXs.push({
-      pz: -12,
-      ...this.shader('abc')
-    })
-    this.doc.current.shaderFXs.push({
-      pz: -14,
-      ...this.shader('abc')
-    })
-    this.doc.current.shaderFXs.push({
-      pz: -16,
-      ...this.shader('abc')
+      shader
     })
   }
 }
@@ -68,10 +57,10 @@ export default {
   height: 100%;
 }
 .range{
-  width: 100%
+  width: calc(100% - 50px);
 }
-.half-full{
+.some-full{
   width: 100%;
-  height: 40%;
+  height: 30%;
 }
 </style>

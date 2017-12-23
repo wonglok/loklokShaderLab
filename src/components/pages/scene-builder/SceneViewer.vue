@@ -1,5 +1,5 @@
 <template>
-  <div class="full" ref="full">
+  <div ref="full">
 
     <Renderer
       ref="renderer"
@@ -19,19 +19,12 @@
 
     <Scene @scene="(v) => { scene = v }">
 
-      <!-- <Object3D :pz="-10">
-        <Points>
-          <SphereBufferGeometry />
-          <MeshBasicMaterial :color="0xff00ff" :opacity="1" />
-        </Points>
-      </Object3D> -->
-
-      <Object3D :pz="fx.pz" :key="iFX" v-for="(fx, iFX) in shaderFXs">
+      <Object3D :pz="fx.pz" :py="fx.py" :px="fx.px" :key="iFX" v-for="(fx, iFX) in shaderFXs">
         <Object3D>
           <Object3D>
             <Points>
               <SphereBufferGeometry />
-              <ShaderMaterial :uniforms="fx.uniforms" :vs="fx.vs" :fs="fx.fs" />
+              <ShaderMaterial :uniforms="fx.shader.uniforms" :vs="fx.shader.vs" :fs="fx.shader.fs" />
             </Points>
           </Object3D>
         </Object3D>
@@ -59,7 +52,7 @@ export default {
   methods: {
     renderWebGL () {
       this.shaderFXs.forEach((fx) => {
-        fx.run()
+        fx.shader.run()
       })
       if (this.scene && this.camera && this.renderer) {
         this.renderer.render(this.scene, this.camera)
@@ -84,11 +77,13 @@ export default {
   mounted () {
     var resizer = () => {
       var rect = this.$refs.full.getBoundingClientRect()
-      this.size = {
-        width: rect.width,
-        height: rect.height,
-        aspect: rect.width / rect.height
-      }
+      this.$nextTick(() => {
+        this.size = {
+          width: rect.width,
+          height: rect.height,
+          aspect: rect.width / rect.height
+        }
+      })
     }
     window.addEventListener('resize', resizer)
     resizer()
