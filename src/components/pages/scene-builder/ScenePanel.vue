@@ -1,24 +1,28 @@
 <template>
   <div>
-    <div class="svg-connector" v-show="useShaderEditor">
-      <SVGConnector @close="() => { useShaderEditor = false }" @shader="(v) => { currentShader = v }" />
-      <SceneViewer v-if="useShaderEditor" :using="useShaderEditor" class="top-right" :doc="doc"></SceneViewer>
-    </div>
-    <div :key="iFX" v-for="(fx, iFX) in shaderFXs">
-      <button @click="iFXnow = iFX; useShaderEditor = true">edit</button><input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.p.y" />
-      <select v-model="fx.elementType">
-        <option value="Mesh">Mesh</option>
-        <option value="Points">Points</option>
-      </select>
-      <select v-model="fx.geometry">
-        <option value="SphereBufferGeometry">SphereBufferGeometry</option>
-        <option value="BoxBufferGeometry">BoxBufferGeometry</option>
-      </select>
-    </div>
+    <div class="panel">
+      <div :key="iFX" v-for="(fx, iFX) in shaderFXs">
 
-    <!-- <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.vs"></textarea>
-    <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.fs"></textarea> -->
-    <textarea class="kinda-full" v-model="shaderFXs[iFXnow].shader.updateFn"></textarea>
+        <div class="svg-connector" v-show="useShaderEditor && iFXnow === iFX">
+          <SVGConnector :importDoc="fx.shader.doc" @close="() => { useShaderEditor = false }" @shader="(v) => { fx.shader.vs = v.vs; fx.shader.fs = v.fs }" />
+        </div>
+        <div v-if="!useShaderEditor" >
+            <button @click="iFXnow = iFX; useShaderEditor = true">edit</button><input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.p.y" />
+            <select v-model="fx.elementType">
+              <option value="Mesh">Mesh</option>
+              <option value="Points">Points</option>
+            </select>
+            <select v-model="fx.geometry">
+              <option value="SphereBufferGeometry">SphereBufferGeometry</option>
+              <option value="BoxBufferGeometry">BoxBufferGeometry</option>
+            </select>
+            <textarea class="kinda-full" v-model="fx.shader.updateFn"></textarea>
+        </div>
+      </div>
+
+      <!-- <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.vs"></textarea>
+      <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.fs"></textarea> -->
+    </div>
   </div>
 </template>
 
@@ -72,6 +76,7 @@ export default {
     // })
     makeNewBall () {
       this.doc.current.shaderFXs.push(Data.makeBall())
+      this.doc.current.shaderFXs.push(Data.makeBox())
     },
     makeNewBox () {
 
@@ -112,6 +117,9 @@ export default {
   position: fixed;
   overflow: scroll;
   width: 100%;
+  height: 100%;
+}
+.panel{
   height: 100%;
 }
 </style>

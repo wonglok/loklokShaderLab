@@ -1,5 +1,5 @@
 <template>
-  <div class="svg-connector">
+  <div class="svg-connector" ref="svg-connector">
     <!-- <div class="debug-console">
       <h1>VertexShader</h1>
       <pre class="vs-code">{{ shaderANS.vs }}</pre>
@@ -54,7 +54,7 @@
         fill="#bababa"
       />
 
-      <g v-for="(conn, index) in connections">
+      <g :key="index" v-for="(conn, index) in connections">
         <SVGPath
         :stroke="'#bababa'"
         :startX="conn.startX" :startY="conn.startY"
@@ -174,6 +174,9 @@ import * as Template from '@/components/parts/SVGConnector/Template.js'
 import * as ShaderExporter from '@/components/parts/SVGConnector/ShaderExporter.js'
 
 export default {
+  props: {
+    importDoc: {}
+  },
   data () {
     return {
       timenow: 0,
@@ -211,6 +214,10 @@ export default {
     }, 100)
   },
   watch: {
+    importDoc () {
+      this.root = this.importDoc
+      this.timenow = this.root.tm.length - 1
+    },
     timenow (now, last) {
       var total = this.root.tm.length - 1
       if (last === total && now !== total) {
@@ -384,7 +391,9 @@ export default {
       }
     },
     makeBox (name) {
-      this.root.doc.funcBoxes.push(Template[name]())
+      var top = this.$refs['svg-connector'].scrollTop
+      var left = this.$refs['svg-connector'].scrollLeft
+      this.root.doc.funcBoxes.push(Template[name]({ top, left }))
     },
     viewportRestore () {
       let viewportmeta = document.querySelector('meta[name="viewport"]')
@@ -537,7 +546,7 @@ export default {
       this.root.doc = Template.getNewDoc()
 
       /* eslint-disable */
-      this.root = require('./Demo.json')
+      this.root = this.importDoc || require('./Demo.json')
       this.timenow = this.root.tm.length - 1
       /* eslint-enable */
 
@@ -575,7 +584,7 @@ export default {
 
 <style scoped>
 .svg-connector{
-  background-color: white;
+  /* background-color: white; */
 }
 .debug-console{
   position: fixed;

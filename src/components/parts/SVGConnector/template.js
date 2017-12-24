@@ -37,10 +37,10 @@ export const getFuncBox = ({ name, boxID, code, type, pos, size, ballsIn, ballsO
   }
 }
 
-export const getWinPos = () => {
+export const getWinPos = (top, left) => {
   return {
-    x: (window.scrollX + 100),
-    y: (window.scrollY + 100)
+    x: (left + 100),
+    y: (top + 100)
   }
 }
 
@@ -65,7 +65,7 @@ export const floatModifier = (config) => {
     type: 'common',
     boxID: funcBoxID,
     code,
-    pos: getWinPos(),
+    pos: getWinPos(config.top, config.left),
     size: {
       w: 380,
       h: 200
@@ -100,7 +100,7 @@ export const vec3Modifier = (config) => {
     type: 'common',
     boxID: funcBoxID,
     code,
-    pos: getWinPos(),
+    pos: getWinPos(config.top, config.left),
     size: {
       w: 380,
       h: 200
@@ -136,7 +136,7 @@ export const vec4Modifier = (config) => {
     type: 'common',
     boxID: funcBoxID,
     code,
-    pos: getWinPos(),
+    pos: getWinPos(config.top, config.left),
     size: {
       w: 400,
       h: 200
@@ -169,7 +169,7 @@ export const outputVertex = (config) => {
     type: 'vertex',
     boxID: funcBoxID,
     code,
-    pos: getWinPos(),
+    pos: getWinPos(config.top, config.left),
     size: {
       w: 380,
       h: 200
@@ -200,7 +200,7 @@ export const outputPointSize = (config) => {
     type: 'vertex',
     boxID: funcBoxID,
     code,
-    pos: getWinPos(),
+    pos: getWinPos(config.top, config.left),
     size: {
       w: 380,
       h: 200
@@ -230,7 +230,7 @@ export const outputUV = (config) => {
     type: 'vertex',
     boxID: funcBoxID,
     code,
-    pos: getWinPos(),
+    pos: getWinPos(config.top, config.left),
     size: {
       w: 380,
       h: 200
@@ -262,7 +262,7 @@ export const outputFragment = (config) => {
     type: 'fragment',
     boxID: funcBoxID,
     code,
-    pos: getWinPos(),
+    pos: getWinPos(config.top, config.left),
     size: {
       w: 380,
       h: 200
@@ -293,7 +293,7 @@ export const getPosition = (config) => {
     type: 'vertex',
     boxID: funcBoxID,
     code,
-    pos: getWinPos(),
+    pos: getWinPos(config.top, config.left),
     size: {
       w: 380,
       h: 200
@@ -326,7 +326,7 @@ export const getUV = (config) => {
     type: 'vertex',
     boxID: funcBoxID,
     code,
-    pos: getWinPos(),
+    pos: getWinPos(config.top, config.left),
     size: {
       w: 380,
       h: 200

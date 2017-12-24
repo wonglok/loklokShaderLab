@@ -7,22 +7,59 @@ export const makePos = () => {
   }
 }
 
+export const ElementType = {
+  points: 'Points',
+  mesh: 'Mesh'
+}
+
+export const GeoType = {
+  Ball: 'SphereBufferGeometry',
+  Box: 'BoxBufferGeometry'
+}
+
 export const makeBall = () => {
   return {
-    elementType: 'Points',
-    geometry: 'SphereBufferGeometry',
+    elementType: ElementType.points,
+    // geometry: 'SphereBufferGeometry',
+    geometry: GeoType.Ball,
 
     ...makePos(),
+    p: { x: 1.5, y: 0, z: 0 },
 
     shader: {
+      doc: JSON.parse(JSON.stringify(require('./SampleShaderGraph-2.json'))),
       uniforms: {
         time: { value: 0 }
       },
-      vs: '',
-      fs: '',
+      vs: undefined,
+      fs: undefined,
       updateFn:
 `uniforms.time.value = window.performance.now() / 1000;
-element.rotation.y += 3.0;`
+element.rotation.y += 0.1;`
+
+    }
+  }
+}
+
+export const makeBox = () => {
+  return {
+    elementType: ElementType.points,
+    // geometry: 'SphereBufferGeometry',
+    geometry: GeoType.Box,
+
+    ...makePos(),
+    p: { x: -1.5, y: 0, z: 0 },
+
+    shader: {
+      doc: JSON.parse(JSON.stringify(require('./SampleShaderGraph-1.json'))),
+      uniforms: {
+        time: { value: 0 }
+      },
+      vs: undefined,
+      fs: undefined,
+      updateFn:
+`uniforms.time.value = window.performance.now() / 1000;
+element.rotation.y += 0.01;`
 
     }
   }
