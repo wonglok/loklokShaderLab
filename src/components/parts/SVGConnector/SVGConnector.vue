@@ -413,7 +413,12 @@ export default {
       return ShaderExporter.generateVSFS({ doc: this.root.doc })
     },
     saveRoot () {
-      var dataStr = JSON.stringify(this.root)
+      var dataStr = JSON.stringify(this.root, (key, value) => {
+        if (typeof value === 'number') {
+          value = Math.round(value)
+        }
+        return value
+      })
       var newBlobURL = URL.createObjectURL(new Blob([dataStr], { type: 'text/json' }))
       var dlAnchorElem = document.createElement('a')
       dlAnchorElem.setAttribute('href', newBlobURL)

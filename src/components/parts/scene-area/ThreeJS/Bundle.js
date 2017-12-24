@@ -4,6 +4,7 @@ export default {
   PerspectiveCamera: require('./System/PerspectiveCamera.vue').default,
 
   Object3D: require('./Element/Object3D.vue').default,
+  LineSegments: require('./Element/LineSegments.vue').default,
   Mesh: require('./Element/Mesh.vue').default,
   Points: require('./Element/Points.vue').default,
   PointLight: require('./Element/PointLight.vue').default,

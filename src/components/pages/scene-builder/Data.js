@@ -9,7 +9,8 @@ export const makePos = () => {
 
 export const ElementType = {
   Points: 'Points',
-  Mesh: 'Mesh'
+  Mesh: 'Mesh',
+  LineSegments: 'LineSegments'
 }
 
 export const GeoType = {
@@ -19,7 +20,7 @@ export const GeoType = {
 
 export const makeBall = () => {
   return {
-    elementType: ElementType.Points,
+    elementType: ElementType.LineSegments,
     // geometry: 'SphereBufferGeometry',
     geometry: GeoType.Ball,
 

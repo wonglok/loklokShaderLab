@@ -9,12 +9,10 @@
         <div v-if="!useShaderEditor" >
             <button @click="iFXnow = iFX; useShaderEditor = true">edit</button><input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.p.y" />
             <select v-model="fx.elementType">
-              <option value="Mesh">Mesh</option>
-              <option value="Points">Points</option>
+              <option :key="iElType" v-for="(elType, iElType) in Data.ElementType" :value="elType">{{ iElType }}</option>
             </select>
             <select v-model="fx.geometry">
-              <option value="SphereBufferGeometry">SphereBufferGeometry</option>
-              <option value="BoxBufferGeometry">BoxBufferGeometry</option>
+              <option :key="iGeoType" v-for="(geoType, iGeoType) in Data.GeoType" :value="geoType">{{ iGeoType }}</option>
             </select>
             <textarea class="kinda-full" v-model="fx.shader.updateFn"></textarea>
         </div>
@@ -39,6 +37,7 @@ export default {
   },
   data () {
     return {
+      Data,
       useShaderEditor: false,
       currentShader: false,
       iFXnow: 0

@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import * as TWEEN from '@tweenjs/tween.js'
 import Bundle from '@/components/parts/scene-area/ThreeJS/Bundle'
 export default {
   components: {
@@ -63,6 +64,7 @@ export default {
   },
   methods: {
     renderWebGL () {
+      TWEEN.update()
       this.funcRunner()
       if (this.scene && this.camera && this.renderer) {
         this.renderer.render(this.scene, this.camera)
@@ -87,6 +89,25 @@ export default {
           fx.shader.run()
         }
       })
+    },
+    funz (iFX) {
+      var el = this.$refs['el-' + iFX][0].element
+      return new Promise((resolve, reject) => {
+        let tween2 = new TWEEN.Tween(el.position)
+          .to({ y: '+3' }, 1000)
+          .easing(TWEEN.Easing.Quadratic.Out)
+          .onComplete(resolve)
+
+        let tween1 = new TWEEN.Tween(el.position)
+          .to({ y: '-3' }, 1000)
+          .easing(TWEEN.Easing.Quadratic.Out)
+
+        tween1.chain(tween2)
+        tween1.start()
+      })
+    },
+    async animate () {
+      await this.funz(0)
     }
   },
   data () {
@@ -102,10 +123,9 @@ export default {
       camera: false
     }
   },
-  created () {
-
-  },
   mounted () {
+    this.animate()
+
     var resizer = this.resizer = () => {
       var rect = this.$refs.full.getBoundingClientRect()
       this.$nextTick(() => {
