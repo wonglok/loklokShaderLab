@@ -64,10 +64,10 @@ element.rotation.y += 0.01;`
 
 export const makeBox = () => {
   return {
-    elementType: ElementType.Mesh,
+    elementType: ElementType.Points,
     // geometry: 'SphereBufferGeometry',
     geometry: GeoType.Box,
-    material: MaterialType.MeshLambertMaterial,
+    material: MaterialType.ShaderMaterial,
 
     ...makePos(),
     p: { x: -1.5, y: 0, z: 0 },

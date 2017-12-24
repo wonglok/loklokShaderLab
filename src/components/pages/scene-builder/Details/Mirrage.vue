@@ -14,15 +14,36 @@
 
   <Scene @scene="(v) => { scene = v }">
 
-    <!-- <CubeCamera
-      v-if="renderer && scene"
-      ref="cube-camera"
+    <CubeCamera
+      v-if="renderer && scene && camera"
       @cube-camera="(v) => { cubeCamera = v }"
       :near="0.1"
       :far="100000"
+      :sceneCamera="camera"
       :cubeResolution="1024"
       :renderer="renderer"
       :scene="scene"
+    />
+
+    <Object3D
+      :pz="0.0" :py="0.0" :px="0.0"
+      :rz="0.0" :ry="0.0" :rx="0.0"
+      :sz="50" :sy="50" :sx="50"
+    >
+      <Mesh @mesh="(v) => { skybox = v }">
+        <SphereBufferGeometry></SphereBufferGeometry>
+        <MeshLambertMaterial :color="0xeeeeee"></MeshLambertMaterial>
+      </Mesh>
+    </Object3D>
+
+
+    <!-- <CubeMapTarget
+      @cube-map-target="(v) => { cubeMapTarget = v }"
+      v-if="renderer && camera"
+      :sceneRenderer="renderer"
+      :sceneCamera="camera"
+      :width="size.width"
+      :height="size.height"
     /> -->
 
     <Refractor :position="{ x: 0, y: 0, z: 3 }" ref="refractor" />
@@ -77,9 +98,11 @@ export default {
   },
   data () {
     return {
+      cubeMapTarget: false,
       cam: {
         pos: { x: -3, y: 0, z: 10 }
       },
+      skybox: false,
       ready: false,
       cubeCamera: false,
       visible: true,
@@ -116,20 +139,50 @@ export default {
       }
     },
     cubeCamera () {
-      // this.scene.background = this.cubeCamera.renderTarget.texture
+      this.tryConfigSkyBox()
+    },
+    skybox () {
+      this.tryConfigSkyBox()
     }
   },
   methods: {
+    tryConfigSkyBox () {
+      if (this.skybox && this.cubeCamera) {
+        this.skybox.material.envMap = this.cubeCamera.camera.renderTarget.texture
+        this.skybox.material.side = THREE.BackSide
+      }
+    },
     setup () {
       this.renderer.setClearColor(0xeeeeee)
+      this.$nextTick(() => {
+        this.$refs['refractor'].animate()
+      })
     },
     renderWebGL () {
       TWEEN.update()
+      this.renderCubeCamera()
+      // this.renderCubeMap()
       this.funcRunner()
       if (this.scene && this.camera && this.renderer) {
         this.renderer.render(this.scene, this.camera)
       }
     },
+    renderCubeCamera () {
+      if (this.cubeCamera) {
+        this.cubeCamera.update()
+      }
+    },
+    // renderCubeMap () {
+    //   if (this.cubeMapTarget) {
+    //     this.cubeMapTarget.update()
+    //     this.shaderFXs.forEach((fx, iFX) => {
+    //       // if (!(this.$refs['el-' + iFX][0].element.material instanceof THREE.ShaderMaterial)) {
+    //       this.$refs['el-' + iFX][0].element.material.envMap = this.cubeMapTarget.texture
+    //       this.$refs['el-' + iFX][0].element.material.envMap.needsUpdate = true
+    //       // }
+    //     })
+    //   }
+    // },
     funcRunner () {
       this.shaderFXs.forEach((fx, iFX) => {
         if (fx.shader.run && fx.shader.update.toString().indexOf(fx.shader.updateFn) !== -1) {

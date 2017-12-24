@@ -5,13 +5,20 @@
 <script>
 import * as THREE from 'three'
 export default {
+  props: {
+    color: {
+      default () {
+        return Math.random() * 0xffffff
+      }
+    }
+  },
   data () {
     return {
       material: false
     }
   },
   mounted () {
-    this.material = new THREE.MeshBasicMaterial({ color: Math.random() * 0xffffff })
+    this.material = new THREE.MeshBasicMaterial({ color: this.color })
     this.$parent.$emit('material', this.material)
   }
 }

@@ -8,6 +8,7 @@ export default {
   props: {
     near: {},
     far: {},
+    sceneCamera: {},
     cubeResolution: {},
     position: {},
     renderer: {},
@@ -26,7 +27,7 @@ export default {
       this.camera.position.y = this.position.y
       this.camera.position.z = this.position.z
     }
-    this.$emit('cube-camera', this.camera)
+    this.$emit('cube-camera', this)
     this.$parent.$emit('add', this.camera)
   },
   beforeDestroy () {
@@ -34,7 +35,9 @@ export default {
   },
   methods: {
     update () {
-      if (this.renderer && this.scene) {
+      if (this.renderer && this.scene && this.sceneCamera) {
+        // this.camera.position.copy(this.sceneCamera.position)
+        // this.camera.rotation.copy(this.sceneCamera.rotation)
         this.camera.update(this.renderer, this.scene)
       }
     }

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <ScenePanel class="panel" :class="{ 'editing': editing }" :doc="doc" @editing="(v) => { editing = v }"></ScenePanel>
     <SceneViewer class="viewer" :class="{ 'editing': editing }" :doc="doc" ref="viewer"></SceneViewer>
+    <ScenePanel class="panel" :class="{ 'editing': editing }" :doc="doc" @editing="(v) => { editing = v }"></ScenePanel>
   </div>
 </template>
 
@@ -41,6 +41,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  flex-direction: row-reverse;
 }
 .panel{
   border-right: black solid 1px;

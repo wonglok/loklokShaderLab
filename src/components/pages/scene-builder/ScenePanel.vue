@@ -6,6 +6,7 @@
       :key="iFX" v-for="(fx, iFX) in shaderFXs"
       class="svg-connector"
       v-show="editingShader && iFXnow === iFX"
+      v-if="fx.shader.doc"
     >
       <SVGConnector :importDoc="fx.shader.doc" @close="() => { editingShader = false }" @shader="(v) => { fx.shader.vs = v.vs; fx.shader.fs = v.fs }" />
     </div>
