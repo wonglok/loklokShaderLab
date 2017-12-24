@@ -1,6 +1,7 @@
 <template>
   <div :class="{ noline: editingShader }">
-
+    <router-link to="/scene-builder">basic</router-link>
+    <router-link to="/scene-builder/mirrage">mirrage</router-link>
     <div
       :key="iFX" v-for="(fx, iFX) in shaderFXs"
       class="svg-connector"

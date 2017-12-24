@@ -6,6 +6,9 @@ import ShaderGUI from '@/components/pages/shader-gui/ShaderGUI.vue'
 import ShaderSVG from '@/components/pages/shader-svg/ShaderSVG.vue'
 import SceneBuilder from '@/components/pages/scene-builder/SceneBuilder.vue'
 
+import Mirrage from '@/components/pages/scene-builder/Details/Mirrage.vue'
+import Basic from '@/components/pages/scene-builder/Details/Basic.vue'
+
 Vue.use(Router)
 
 export default new Router({
@@ -17,7 +20,17 @@ export default new Router({
     },
     {
       path: '/scene-builder',
-      component: SceneBuilder
+      component: SceneBuilder,
+      children: [
+        {
+          path: '',
+          component: Basic
+        },
+        {
+          path: 'mirrage',
+          component: Mirrage
+        }
+      ]
     },
     {
       path: '/shader-gui',

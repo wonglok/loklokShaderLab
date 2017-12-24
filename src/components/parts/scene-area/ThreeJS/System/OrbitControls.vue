@@ -10,7 +10,7 @@ import 'imports-loader?THREE=three!three/examples/js/controls/OrbitControls.js'
 export default {
   props: {
     camera: {},
-    renderer: {}
+    toucher: {}
   },
   data () {
     return {
@@ -18,7 +18,7 @@ export default {
     }
   },
   mounted () {
-    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
+    this.controls = new THREE.OrbitControls(this.camera, this.toucher)
   }
 }
 </script>

@@ -1,11 +1,18 @@
+<template>
+<div class="cube-camera"></div>
+</template>
+
 <script>
 import * as THREE from 'three'
 export default {
-  abstract: true,
-  render () {
-    return null
+  props: {
+    near: {},
+    far: {},
+    cubeResolution: {},
+    position: {},
+    renderer: {},
+    scene: {}
   },
-  props: ['near', 'far', 'cubeResolution', 'position'],
   data () {
     return {
       camera: null
@@ -19,7 +26,18 @@ export default {
       this.camera.position.y = this.position.y
       this.camera.position.z = this.position.z
     }
-    this.$emit('cubeCamera', this.camera)
+    this.$emit('cube-camera', this.camera)
+    this.$parent.$emit('add', this.camera)
+  },
+  beforeDestroy () {
+    this.$parent.$emit('remove', this.camera)
+  },
+  methods: {
+    update () {
+      if (this.renderer && this.scene) {
+        this.camera.update(this.renderer, this.scene)
+      }
+    }
   },
   watch: {
     position () {

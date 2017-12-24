@@ -1,5 +1,8 @@
 <template>
-  <div class="full" ref="mounter"></div>
+  <div class="full pos-rel">
+    <div class="full layer" ref="mounter"></div>
+    <div class="full layer"><slot></slot></div>
+  </div>
 </template>
 
 <script>
@@ -53,5 +56,13 @@ export default {
 .full{
   width: 100%;
   height: 100%;
+}
+.pos-rel{
+  position: relative;
+}
+.layer{
+  position: absolute;
+  top: 0px;
+  left: 0px;
 }
 </style>
