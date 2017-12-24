@@ -456,6 +456,8 @@ export default {
       let factor = (window.navigator.userAgent.indexOf('Chrome') !== -1) ? 1.0 : 0.5
       this.dragging.endX += evt.velocityX * (this.fps.diff) * factor
       this.dragging.endY += evt.velocityY * (this.fps.diff) * factor
+      this.dragging.endX = Math.round(this.dragging.endX)
+      this.dragging.endY = Math.round(this.dragging.endY)
     },
     getConnEndOffset () {
       var svgOffset = this.offset(this.$refs['svg-graph'])
@@ -574,9 +576,11 @@ export default {
       var factor = (window.navigator.userAgent.indexOf('Chrome') !== -1) ? 1.0 : 0.5
       funcBox.pos.x += evt.velocityX * (this.fps.diff) * factor
       funcBox.pos.y += evt.velocityY * (this.fps.diff) * factor
+
+      funcBox.pos.x = Math.round(funcBox.pos.x)
+      funcBox.pos.y = Math.round(funcBox.pos.y)
     },
     onPanEnd (evt, funcBox) {
-
     }
   }
 }

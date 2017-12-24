@@ -34,7 +34,7 @@ ${box.code}
     return accu
   }, '')
 
-  console.log(ans)
+  // console.log(ans)
   return ans
 }
 

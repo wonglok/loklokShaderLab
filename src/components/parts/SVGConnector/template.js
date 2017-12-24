@@ -138,7 +138,7 @@ export const vec4Modifier = (config) => {
     code,
     pos: getWinPos(config.top, config.left),
     size: {
-      w: 400,
+      w: 460,
       h: 200
     },
     ballsIn,

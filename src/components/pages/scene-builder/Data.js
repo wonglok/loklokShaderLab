@@ -8,8 +8,8 @@ export const makePos = () => {
 }
 
 export const ElementType = {
-  points: 'Points',
-  mesh: 'Mesh'
+  Points: 'Points',
+  Mesh: 'Mesh'
 }
 
 export const GeoType = {
@@ -19,7 +19,7 @@ export const GeoType = {
 
 export const makeBall = () => {
   return {
-    elementType: ElementType.points,
+    elementType: ElementType.Points,
     // geometry: 'SphereBufferGeometry',
     geometry: GeoType.Ball,
 
@@ -27,7 +27,7 @@ export const makeBall = () => {
     p: { x: 1.5, y: 0, z: 0 },
 
     shader: {
-      doc: JSON.parse(JSON.stringify(require('./SampleShaderGraph-2.json'))),
+      doc: JSON.parse(JSON.stringify(require('./SampleShaderGraph-ball.json'))),
       uniforms: {
         time: { value: 0 }
       },
@@ -43,7 +43,7 @@ element.rotation.y += 0.1;`
 
 export const makeBox = () => {
   return {
-    elementType: ElementType.points,
+    elementType: ElementType.Points,
     // geometry: 'SphereBufferGeometry',
     geometry: GeoType.Box,
 
@@ -51,7 +51,7 @@ export const makeBox = () => {
     p: { x: -1.5, y: 0, z: 0 },
 
     shader: {
-      doc: JSON.parse(JSON.stringify(require('./SampleShaderGraph-1.json'))),
+      doc: JSON.parse(JSON.stringify(require('./SampleShaderGraph-box.json'))),
       uniforms: {
         time: { value: 0 }
       },
