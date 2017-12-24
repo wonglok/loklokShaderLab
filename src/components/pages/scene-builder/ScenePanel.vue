@@ -1,22 +1,32 @@
 <template>
-  <div>
-    <div class="panel">
-      <div :key="iFX" v-for="(fx, iFX) in shaderFXs">
+  <div :class="{ noline: editingShader }">
 
-        <div class="svg-connector" v-show="useShaderEditor && iFXnow === iFX">
-          <SVGConnector :importDoc="fx.shader.doc" @close="() => { useShaderEditor = false }" @shader="(v) => { fx.shader.vs = v.vs; fx.shader.fs = v.fs }" />
-        </div>
-        <div v-if="!useShaderEditor" >
-            <button @click="iFXnow = iFX; useShaderEditor = true">edit</button><input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.p.y" />
+    <div
+      :key="iFX" v-for="(fx, iFX) in shaderFXs"
+      class="svg-connector"
+      v-show="editingShader && iFXnow === iFX"
+    >
+      <SVGConnector :importDoc="fx.shader.doc" @close="() => { editingShader = false }" @shader="(v) => { fx.shader.vs = v.vs; fx.shader.fs = v.fs }" />
+    </div>
+
+    <div class="panel" :class="{ hide: editingShader }" v-if="!editingShader">
+      <div :key="iFX" v-for="(fx, iFX) in shaderFXs">
+        <div v-if="!editingShader" >
             <select v-model="fx.elementType">
               <option :key="iElType" v-for="(elType, iElType) in Data.ElementType" :value="elType">{{ iElType }}</option>
             </select>
             <select v-model="fx.geometry">
               <option :key="iGeoType" v-for="(geoType, iGeoType) in Data.GeoType" :value="geoType">{{ iGeoType }}</option>
             </select>
+            <select v-model="fx.material">
+              <option :key="iMaterialType" v-for="(materialType, iMaterialType) in Data.MaterialType" :value="materialType">{{ iMaterialType }}</option>
+            </select>
+            <button v-if="fx.material === Data.MaterialType.ShaderMaterial" @click="iFXnow = iFX; editingShader = true">Edit Shader</button><input class="range" type="range" step="0.00000001" min="-50" max="50" v-model="fx.p.y" />
+
             <textarea class="kinda-full" v-model="fx.shader.updateFn"></textarea>
         </div>
       </div>
+
 
       <!-- <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.vs"></textarea>
       <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.fs"></textarea> -->
@@ -38,7 +48,7 @@ export default {
   data () {
     return {
       Data,
-      useShaderEditor: false,
+      editingShader: false,
       currentShader: false,
       iFXnow: 0
     }
@@ -52,6 +62,9 @@ export default {
         this.shaderFXs[this.iFXnow].shader.fs = this.currentShader.fs
         this.shaderFXs[this.iFXnow].shader.vs = this.currentShader.vs
       }
+    },
+    editingShader () {
+      this.$emit('editing', this.editingShader)
     }
   },
   computed: {
@@ -68,21 +81,20 @@ export default {
     //   'saveJSON': 'shaders/saveJSON',
     //   'restoreJSON': 'shaders/restoreJSON'
     // }),
+
     // ...Vuex.mapMutations({
     //   'updateShader': 'shaders/update',
     //   'addShader': 'shaders/add',
     //   'removeShader': 'shaders/remove'
     // })
-    makeNewBall () {
-      this.doc.current.shaderFXs.push(Data.makeBall())
-      this.doc.current.shaderFXs.push(Data.makeBox())
-    },
-    makeNewBox () {
-
-    }
+  },
+  mounted () {
+    this.doc.current.shaderFXs.push(Data.makeBall())
+    this.doc.current.shaderFXs.push(Data.makeBox())
+    this.doc.current.lights.push(Data.makePointLight())
   },
   created () {
-    this.makeNewBall()
+    this.$emit('editing', this.editingShader)
   }
 }
 </script>
@@ -120,5 +132,11 @@ export default {
 }
 .panel{
   height: 100%;
+}
+.panel.hide{
+  display: none;
+}
+.noline{
+  border: none;
 }
 </style>

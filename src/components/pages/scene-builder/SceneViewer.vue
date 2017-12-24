@@ -8,29 +8,52 @@
     >
     </Renderer>
 
+    <OrbitControls v-if="renderer && camera || ready" :renderer="renderer" :camera="camera" />
+
     <PerspectiveCamera
       :fov="75"
       :aspect="size.aspect"
       :near="0.1"
       :far="1000"
-      :position="{ x: 0, y: 0, z: 5 }"
+      :position="cam.pos"
       @camera="(v) => { camera = v; }"
     />
 
+    <!-- <CubeCamera
+      :near="0.1"
+      :far="100000"
+      :cubeResolution="1024"
+      @cubeCamera="(v) => { cubeCamera = v; }"
+    /> -->
+
     <Scene @scene="(v) => { scene = v }">
 
+      <Refractor :position="{ x: 0, y: 0, z: 3 }" ref="refractor" />
+
       <Object3D
+        :pz="lig.p.z" :py="lig.p.y" :px="lig.p.x"
+        :rz="lig.r.z" :ry="lig.r.y" :rx="lig.r.x"
+        :sz="lig.s.z" :sy="lig.s.y" :sx="lig.s.x"
+
+        :key="iLight" v-for="(lig, iLight) in lights"
+      >
+        <component v-bind:is="lig.lightType" :ref="'light-' + iLight" />
+      </Object3D>
+
+      <Object3D
+        :visible="visible"
         :pz="fx.p.z" :py="fx.p.y" :px="fx.p.x"
         :rz="fx.r.z" :ry="fx.r.y" :rx="fx.r.x"
         :sz="fx.s.z" :sy="fx.s.y" :sx="fx.s.x"
 
         :key="iFX" v-for="(fx, iFX) in shaderFXs"
+        :ref="'obj-' + iFX"
       >
         <!-- <Object3D> -->
           <!-- <Object3D> -->
             <component v-bind:is="fx.elementType" :ref="'el-' + iFX">
-              <component v-bind:is="fx.geometry" />
-              <ShaderMaterial :uniforms="fx.shader.uniforms" :vs="fx.shader.vs" :fs="fx.shader.fs" />
+              <component v-bind:is="fx.geometry" v-if="fx.geometry" />
+              <component v-bind:is="fx.material" v-if="fx.material" :uniforms="fx.shader.uniforms" :vs="fx.shader.vs" :fs="fx.shader.fs" />
             </component>
           <!-- </Object3D> -->
         <!-- </Object3D> -->
@@ -42,9 +65,12 @@
 </template>
 
 <script>
+import * as THREE from 'three'
+
 import * as TWEEN from '@tweenjs/tween.js'
 import Bundle from '@/components/parts/scene-area/ThreeJS/Bundle'
 export default {
+  THREE,
   components: {
     ...Bundle
   },
@@ -53,11 +79,24 @@ export default {
     doc: {}
   },
   computed: {
+    lights () {
+      return this.doc.current.lights
+    },
     shaderFXs () {
       return this.doc.current.shaderFXs
     }
   },
   watch: {
+    camera () {
+      if (this.camera && this.renderer) {
+        this.ready = true
+      }
+    },
+    renderer () {
+      if (this.camera && this.renderer) {
+        this.ready = true
+      }
+    },
     using () {
       this.resizer()
     }
@@ -65,10 +104,14 @@ export default {
   methods: {
     renderWebGL () {
       TWEEN.update()
+      this.renderColor()
       this.funcRunner()
       if (this.scene && this.camera && this.renderer) {
         this.renderer.render(this.scene, this.camera)
       }
+    },
+    renderColor () {
+      this.renderer.setClearColor(0xeeeeee)
     },
     funcRunner () {
       this.shaderFXs.forEach((fx, iFX) => {
@@ -91,27 +134,34 @@ export default {
       })
     },
     funz (iFX) {
-      var el = this.$refs['el-' + iFX][0].element
+      var el = this.$refs['refractor'].refractor
       return new Promise((resolve, reject) => {
-        let tween2 = new TWEEN.Tween(el.position)
-          .to({ y: '+3' }, 1000)
+        let tween1 = new TWEEN.Tween(el.scale)
+          .to({ y: '-1' }, 1000)
+          .easing(TWEEN.Easing.Quadratic.Out)
+
+        let tween2 = new TWEEN.Tween(el.scale)
+          .to({ y: '+1' }, 1000)
           .easing(TWEEN.Easing.Quadratic.Out)
           .onComplete(resolve)
 
-        let tween1 = new TWEEN.Tween(el.position)
-          .to({ y: '-3' }, 1000)
-          .easing(TWEEN.Easing.Quadratic.Out)
-
         tween1.chain(tween2)
+        tween2.chain(tween1)
         tween1.start()
       })
     },
     async animate () {
-      await this.funz(0)
+      this.funz(0)
     }
   },
   data () {
     return {
+      cam: {
+        pos: { x: -10, y: 0, z: 10 }
+      },
+      ready: false,
+      cubeCamera: false,
+      visible: true,
       resizer: () => {},
       size: {
         width: 100,
@@ -127,8 +177,8 @@ export default {
     this.animate()
 
     var resizer = this.resizer = () => {
-      var rect = this.$refs.full.getBoundingClientRect()
       this.$nextTick(() => {
+        var rect = this.$refs.full.getBoundingClientRect()
         this.size = {
           width: rect.width,
           height: rect.height,

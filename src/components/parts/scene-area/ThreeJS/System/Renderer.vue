@@ -4,6 +4,10 @@
 
 <script>
 import * as THREE from 'three'
+/* eslint-disable */
+import 'imports-loader?THREE=three!three/examples/js/controls/OrbitControls.js'
+/* eslint-enable */
+
 export default {
   data () {
     return {
@@ -24,6 +28,7 @@ export default {
     this.resize()
     this.renderer.domElement.style.marginBottom = '-6px'
     this.$refs.mounter.appendChild(this.renderer.domElement)
+
     this.$emit('renderer', this.renderer)
   },
   beforeDestroy () {

@@ -621,7 +621,7 @@ export default {
   left: 0px;
   width: 100vw;
   height: 100px;
-  background-color: white;
+  background-color: rgba(255,255,255,0.4);
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
 }

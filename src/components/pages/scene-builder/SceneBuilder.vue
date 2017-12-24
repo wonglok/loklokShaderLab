@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <ScenePanel class="panel" :doc="doc"></ScenePanel>
-    <SceneViewer class="viewer" :doc="doc"></SceneViewer>
+    <ScenePanel class="panel" :class="{ 'editing': editing }" :doc="doc" @editing="(v) => { editing = v }"></ScenePanel>
+    <SceneViewer class="viewer" :class="{ 'editing': editing }" :doc="doc" ref="viewer"></SceneViewer>
   </div>
 </template>
 
@@ -13,11 +13,18 @@ export default {
     SceneViewer,
     ScenePanel
   },
+  watch: {
+    editing () {
+      this.$refs.viewer.resizer()
+    }
+  },
   data () {
     return {
+      editing: true,
       doc: {
         current: {
-          shaderFXs: []
+          shaderFXs: [],
+          lights: []
         },
         preview: {},
         tm: []
@@ -36,11 +43,18 @@ export default {
   align-items: center;
 }
 .panel{
+  border-right: black solid 1px;
   height: 100%;
   width: 300px;
 }
 .viewer{
   height: 100%;
   width: calc(100% - 300px);
+}
+.panel.editing{
+  width: 0px;
+}
+.viewer.editing{
+  width: 100%;
 }
 </style>

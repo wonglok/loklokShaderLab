@@ -18,11 +18,31 @@ export const GeoType = {
   Box: 'BoxBufferGeometry'
 }
 
+export const MaterialType = {
+  ShaderMaterial: 'ShaderMaterial',
+  MeshPhongMaterial: 'MeshPhongMaterial',
+  MeshLambertMaterial: 'MeshLambertMaterial',
+  LineBasicMaterial: 'LineBasicMaterial'
+}
+
+export const LightType = {
+  PointLight: 'PointLight'
+}
+
+export const makePointLight = () => {
+  return {
+    lightType: LightType.PointLight,
+    ...makePos(),
+    p: { x: 0, y: 0, z: 5 }
+  }
+}
+
 export const makeBall = () => {
   return {
     elementType: ElementType.LineSegments,
     // geometry: 'SphereBufferGeometry',
     geometry: GeoType.Ball,
+    material: MaterialType.ShaderMaterial,
 
     ...makePos(),
     p: { x: 1.5, y: 0, z: 0 },
@@ -36,7 +56,7 @@ export const makeBall = () => {
       fs: undefined,
       updateFn:
 `uniforms.time.value = window.performance.now() / 1000;
-element.rotation.y += 0.1;`
+element.rotation.y += 0.01;`
 
     }
   }
@@ -44,9 +64,10 @@ element.rotation.y += 0.1;`
 
 export const makeBox = () => {
   return {
-    elementType: ElementType.Points,
+    elementType: ElementType.Mesh,
     // geometry: 'SphereBufferGeometry',
     geometry: GeoType.Box,
+    material: MaterialType.MeshLambertMaterial,
 
     ...makePos(),
     p: { x: -1.5, y: 0, z: 0 },

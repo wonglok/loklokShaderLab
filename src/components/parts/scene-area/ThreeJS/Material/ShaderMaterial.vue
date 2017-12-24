@@ -44,7 +44,36 @@ export default {
       try {
         this.material = new THREE.ShaderMaterial({
           uniforms: {
-            ...this.uniforms
+            ...this.uniforms// ,
+            // ...THREE.UniformsUtils.merge([
+            //   THREE.UniformsLib.common,
+            //   THREE.UniformsLib.aomap,
+            //   THREE.UniformsLib.lightmap,
+            //   THREE.UniformsLib.emissivemap,
+            //   THREE.UniformsLib.bumpmap,
+            //   THREE.UniformsLib.normalmap,
+            //   THREE.UniformsLib.displacementmap,
+            //   THREE.UniformsLib.fog,
+            //   THREE.UniformsLib.lights,
+            //   THREE.UniformsLib.shadowmap,
+            //   {
+            //     flipEnvMap: {
+            //       value: 1
+            //     },
+            //     emissive: {
+            //       value: new THREE.Color(0x000000)
+            //     },
+            //     specular: {
+            //       value: new THREE.Color(0x111111)
+            //     },
+            //     shininess: {
+            //       value: 30
+            //     },
+            //     envMap: {
+            //       // value: cubeCamera.renderTarget
+            //     }
+            //   }
+            // ])
           },
           vertexShader: this.vs,
           fragmentShader: this.fs

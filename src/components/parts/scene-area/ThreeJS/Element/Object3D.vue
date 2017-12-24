@@ -11,6 +11,7 @@ export default {
     }
   },
   props: {
+    visible: { default: true },
     px: { default: 0 },
     py: { default: 0 },
     pz: { default: 0 },
@@ -24,6 +25,7 @@ export default {
     rz: { default: 0 }
   },
   watch: {
+    visible () { this.object3d.setVisible(this.visible) },
     px () { this.updatePosition('x', this.px) },
     py () { this.updatePosition('y', this.py) },
     pz () { this.updatePosition('z', this.pz) },
@@ -38,6 +40,7 @@ export default {
   },
   created () {
     this.object3d = new THREE.Object3D()
+    this.object3d.visible = true
     this.updatePosition()
     this.updateScale()
     this.updateRotation()

@@ -11,7 +11,7 @@ export default {
     }
   },
   mounted () {
-    this.light = new THREE.PointLight({ color: 0xff0000 })
+    this.light = new THREE.PointLight({ color: 0xffffff })
     this.$parent.$emit('add', this.light)
   },
   beforeDestroy () {
