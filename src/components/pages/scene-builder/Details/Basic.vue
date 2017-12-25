@@ -65,6 +65,10 @@
 import * as THREE from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
 import Bundle from '@/components/parts/scene-area/ThreeJS/Bundle'
+/* eslint-disable */
+import 'imports-loader?THREE=three!three/examples/js/shaders/FresnelShader.js'
+/* eslint-enable */
+
 export default {
   THREE,
   components: {
@@ -124,19 +128,31 @@ export default {
   methods: {
     trySetupReFraction () {
       if (this.cubeTexture && this.refractionBox) {
-        this.renderer.setClearColor(0xeeeeee)
-        this.renderer.setFaceCulling(THREE.CullFaceNone)
+        // this.renderer.setClearColor(0xeeeeee)
+        // this.renderer.setFaceCulling(THREE.CullFaceNone)
         this.scene.background = this.cubeTexture
         this.cubeTexture.format = THREE.RGBFormat
         this.cubeTexture.needsUpdate = true
 
-        let material = this.refractionBox.material
-        material.color = new THREE.Color(0xeeeeee)
-        material.refractionRatio = 0.98
-        material.reflectionRatio = 0.98
-        material.envMap = this.cubeTexture
-        material.envMap.mapping = THREE.CubeRefractionMapping
+        // let material = this.refractionBox.material
+        // material.color = new THREE.Color(0xeeeeee)
+        // material.refractionRatio = 0.98
+        // material.reflectionRatio = 0.98
+        // material.envMap = this.cubeTexture
+        // material.envMap.mapping = THREE.CubeRefractionMapping
+        // material.needsUpdate = true
+
+        var shader = THREE.FresnelShader
+        var uniforms = THREE.UniformsUtils.clone(shader.uniforms)
+
+        uniforms['tCube'].value = this.cubeTexture
+        let material = new THREE.ShaderMaterial({
+          uniforms: uniforms,
+          vertexShader: shader.vertexShader,
+          fragmentShader: shader.fragmentShader
+        })
         material.needsUpdate = true
+        this.refractionBox.material = material
       }
     },
     setup () {

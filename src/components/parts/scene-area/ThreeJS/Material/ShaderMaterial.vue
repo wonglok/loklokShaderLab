@@ -75,8 +75,8 @@ export default {
             //   }
             // ])
           },
-          vertexShader: this.vs,
-          fragmentShader: this.fs
+          vertexShader: this.vs || this.$options.props.vs.default,
+          fragmentShader: this.fs || this.$options.props.fs.default
         })
         this.$parent.$emit('material', this.material)
       } catch (e) {

@@ -7,7 +7,7 @@
     :fov="75"
     :aspect="size.aspect"
     :near="0.1"
-    :far="1000"
+    :far="100000"
     :position="cam.pos"
     @camera="(v) => { camera = v; }"
   />
@@ -18,7 +18,7 @@
       v-if="renderer && scene && camera"
       @cube-camera="(v) => { cubeCamera = v }"
       :near="0.1"
-      :far="100000"
+      :far="1000000"
       :sceneCamera="camera"
       :cubeResolution="1024"
       :renderer="renderer"
@@ -36,15 +36,6 @@
       </Mesh>
     </Object3D>
 
-
-    <!-- <CubeMapTarget
-      @cube-map-target="(v) => { cubeMapTarget = v }"
-      v-if="renderer && camera"
-      :sceneRenderer="renderer"
-      :sceneCamera="camera"
-      :width="size.width"
-      :height="size.height"
-    /> -->
 
     <Refractor :position="{ x: 0, y: 0, z: 3 }" ref="refractor" />
 
@@ -86,6 +77,7 @@
 import * as THREE from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
 import Bundle from '@/components/parts/scene-area/ThreeJS/Bundle'
+
 export default {
   THREE,
   components: {
@@ -151,6 +143,8 @@ export default {
         let texture = this.cubeCamera.camera.renderTarget.texture
         this.skybox.material.envMap = texture
         this.skybox.material.side = THREE.BackSide
+        this.skybox.material.needsUpdate = true
+
         // this.skybox.material.mapping = THREE.CubeRefractionMapping
         // texture.wrapS = THREE.RepeatWrapping
         // texture.repeat.x = -1
@@ -158,7 +152,7 @@ export default {
       }
     },
     setup () {
-      this.renderer.setClearColor(0xeeeeee)
+      this.renderer.setClearColor(0xffffff)
       this.$nextTick(() => {
         this.$refs['refractor'].animate()
       })
@@ -173,8 +167,10 @@ export default {
       }
     },
     renderCubeCamera () {
-      if (this.cubeCamera) {
+      if (this.cubeCamera && this.skybox) {
+        this.skybox.visible = false
         this.cubeCamera.update()
+        this.skybox.visible = true
       }
     },
     // renderCubeMap () {

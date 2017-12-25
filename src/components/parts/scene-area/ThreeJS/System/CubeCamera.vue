@@ -28,16 +28,21 @@ export default {
       this.camera.position.z = this.position.z
     }
     this.$emit('cube-camera', this)
-    this.$parent.$emit('add', this.camera)
+    // this.$parent.$emit('add', this.camera)
   },
   beforeDestroy () {
-    this.$parent.$emit('remove', this.camera)
+    // this.$parent.$emit('remove', this.camera)
   },
   methods: {
     update () {
       if (this.renderer && this.scene && this.sceneCamera) {
         // this.camera.position.copy(this.sceneCamera.position)
-        // this.camera.rotation.copy(this.sceneCamera.rotation)
+        this.camera.rotation.set(
+          this.sceneCamera.rotation.x,
+          this.sceneCamera.rotation.y,
+          this.sceneCamera.rotation.z
+        )
+        this.camera.rotation.needsUpdate = true
         this.camera.update(this.renderer, this.scene)
       }
     }
