@@ -14,7 +14,27 @@
 
   <Scene @scene="(v) => { scene = v }">
 
-    <Refractor :position="{ x: 0, y: 0, z: 3 }" ref="refractor" />
+    <CubeCamera
+      v-if="renderer && scene && camera"
+      @cube-camera="(v) => { cubeCamera = v }"
+      :near="0.1"
+      :far="1000000"
+      :sceneCamera="camera"
+      :cubeResolution="1024"
+      :renderer="renderer"
+      :scene="scene"
+    />
+
+    <Object3D
+      :pz="0.0" :py="0.0" :px="0.0"
+      :rz="0.0" :ry="0.0" :rx="0.0"
+      :sz="10" :sy="10" :sx="10"
+    >
+      <Mesh @mesh="(v) => { skybox = v }">
+        <SphereBufferGeometry></SphereBufferGeometry>
+        <MeshLambertMaterial :color="0xeeeeee"></MeshLambertMaterial>
+      </Mesh>
+    </Object3D>
 
     <SceneReader :doc="doc" ref="sceneReader" />
 
@@ -27,7 +47,7 @@
 import * as THREE from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
 import Bundle from '@/components/parts/scene-area/ThreeJS/Bundle'
-import SceneReader from './SceneReader.vue'
+import SceneReader from './SceneReader'
 
 export default {
   THREE,
@@ -45,7 +65,9 @@ export default {
       cam: {
         pos: { x: -3, y: 0, z: 10 }
       },
+      skybox: false,
       ready: false,
+      cubeCamera: false,
       visible: true,
       resizer: () => {},
       scene: false,
@@ -67,14 +89,25 @@ export default {
       if (this.ready) {
         this.setup()
       }
+    },
+    cubeCamera () {
+      this.tryConfigSkyBox()
+    },
+    skybox () {
+      this.tryConfigSkyBox()
     }
   },
   methods: {
+    tryConfigSkyBox () {
+      if (this.skybox && this.cubeCamera) {
+        let texture = this.cubeCamera.camera.renderTarget.texture
+        this.skybox.material.envMap = texture
+        this.skybox.material.side = THREE.BackSide
+        this.skybox.material.needsUpdate = true
+      }
+    },
     setup () {
-      this.renderer.setClearColor(0xEEEEEE)
-      this.$nextTick(() => {
-        this.$refs['refractor'].animate()
-      })
+      this.renderer.setClearColor(0xffffff)
     },
     renderWebGL () {
       TWEEN.update()

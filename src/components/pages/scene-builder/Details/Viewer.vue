@@ -2,19 +2,16 @@
 <div ref="toucher">
 
   <OrbitControls v-if="camera" :toucher="$refs['toucher']" :camera="camera" />
-
   <PerspectiveCamera
     :fov="75"
     :aspect="size.aspect"
     :near="0.1"
-    :far="100000"
+    :far="1000"
     :position="cam.pos"
     @camera="(v) => { camera = v; }"
   />
 
   <Scene @scene="(v) => { scene = v }">
-
-    <Refractor :position="{ x: 0, y: 0, z: 3 }" ref="refractor" />
 
     <SceneReader :doc="doc" ref="sceneReader" />
 
@@ -26,14 +23,17 @@
 <script>
 import * as THREE from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
+import SceneReader from './SceneReader'
 import Bundle from '@/components/parts/scene-area/ThreeJS/Bundle'
-import SceneReader from './SceneReader.vue'
+/* eslint-disable */
+import 'imports-loader?THREE=three!three/examples/js/shaders/FresnelShader.js'
+/* eslint-enable */
 
 export default {
   THREE,
   components: {
-    ...Bundle,
-    SceneReader
+    SceneReader,
+    ...Bundle
   },
   props: {
     size: {},
@@ -46,12 +46,21 @@ export default {
         pos: { x: -3, y: 0, z: 10 }
       },
       ready: false,
+      cubeCamera: false,
       visible: true,
       resizer: () => {},
       scene: false,
       camera: false
     }
   },
+  // computed: {
+  //   lights () {
+  //     return this.doc.current.lights
+  //   },
+  //   shaderFXs () {
+  //     return this.doc.current.shaderFXs
+  //   }
+  // },
   watch: {
     camera () {
       if (this.camera && this.renderer) {
@@ -71,27 +80,18 @@ export default {
   },
   methods: {
     setup () {
-      this.renderer.setClearColor(0xEEEEEE)
-      this.$nextTick(() => {
-        this.$refs['refractor'].animate()
-      })
     },
     renderWebGL () {
       TWEEN.update()
-      this.renderCubeCamera()
-      // this.renderCubeMap()
+      if (this.refractionBox) {
+        this.refractionBox.rotation.x -= 0.01
+        this.refractionBox.rotation.y += 0.01
+      }
       if (this.$refs.sceneReader) {
         this.$refs.sceneReader.funcRunner()
       }
       if (this.scene && this.camera && this.renderer) {
         this.renderer.render(this.scene, this.camera)
-      }
-    },
-    renderCubeCamera () {
-      if (this.cubeCamera && this.skybox) {
-        this.skybox.visible = false
-        this.cubeCamera.update()
-        this.skybox.visible = true
       }
     }
   },

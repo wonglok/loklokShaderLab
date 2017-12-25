@@ -7,7 +7,11 @@ import ShaderSVG from '@/components/pages/shader-svg/ShaderSVG.vue'
 import SceneBuilder from '@/components/pages/scene-builder/SceneBuilder.vue'
 
 import Mirrage from '@/components/pages/scene-builder/Details/Mirrage.vue'
-import Basic from '@/components/pages/scene-builder/Details/Basic.vue'
+import Viewer from '@/components/pages/scene-builder/Details/Viewer.vue'
+import CubeCam from '@/components/pages/scene-builder/Details/CubeCam.vue'
+
+import Fresnel from '@/components/pages/scene-builder/Details/Fresnel.vue'
+import Refraction from '@/components/pages/scene-builder/Details/Refraction.vue'
 
 Vue.use(Router)
 
@@ -24,11 +28,23 @@ export default new Router({
       children: [
         {
           path: '',
-          component: Basic
+          component: Viewer
         },
         {
           path: 'mirrage',
           component: Mirrage
+        },
+        {
+          path: 'cubecam',
+          component: CubeCam
+        },
+        {
+          path: 'fresnel',
+          component: Fresnel
+        },
+        {
+          path: 'refraction',
+          component: Refraction
         }
       ]
     },

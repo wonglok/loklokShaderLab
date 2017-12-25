@@ -1,7 +1,12 @@
 <template>
   <div :class="{ noline: editingShader }">
-    <router-link to="/scene-builder">basic</router-link>
+    <router-link to="/scene-builder">viewer</router-link>
+    <router-link to="/scene-builder/cubecam">cubecam</router-link>
     <router-link to="/scene-builder/mirrage">mirrage</router-link>
+
+    <router-link to="/scene-builder/fresnel">fresnel</router-link>
+    <router-link to="/scene-builder/refraction">refraction</router-link>
+
     <div
       :key="iFX" v-for="(fx, iFX) in shaderFXs"
       class="svg-connector"
@@ -126,11 +131,12 @@ export default {
   height: 10%;
 }
 .svg-connector{
-  position: fixed;
+  position: absolute;
   overflow: scroll;
   width: 100%;
-  height: calc(100% - 100px);
-  top: 100px;
+  height: calc(100%);
+  top: 0px;
+  /* -webkit-overflow-scrolling: touch; */
 }
 .panel{
   height: 100%;

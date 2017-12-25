@@ -42,7 +42,7 @@ export default {
           this.sceneCamera.rotation.y,
           this.sceneCamera.rotation.z
         )
-        this.camera.rotation.needsUpdate = true
+        this.camera.needsUpdate = true
         this.camera.update(this.renderer, this.scene)
       }
     }
