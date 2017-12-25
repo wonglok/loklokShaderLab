@@ -11,7 +11,7 @@ export default {
     }
   },
   mounted () {
-    let geometry = new THREE.SphereBufferGeometry(2, 32, 32)
+    let geometry = new THREE.SphereBufferGeometry(2, 256, 256)
     this.$parent.$emit('geometry', geometry)
   }
 }
