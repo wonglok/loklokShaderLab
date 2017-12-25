@@ -29,7 +29,6 @@
         </div>
       </div>
 
-
       <!-- <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.vs"></textarea>
       <textarea class="some-full" v-model="shaderFXs[iFXnow].shader.fs"></textarea> -->
     </div>
@@ -130,7 +129,8 @@ export default {
   position: fixed;
   overflow: scroll;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 100px);
+  top: 100px;
 }
 .panel{
   height: 100%;

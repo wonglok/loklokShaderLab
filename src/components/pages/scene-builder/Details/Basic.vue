@@ -2,7 +2,6 @@
 <div ref="toucher">
 
   <OrbitControls v-if="camera" :toucher="$refs['toucher']" :camera="camera" />
-
   <PerspectiveCamera
     :fov="75"
     :aspect="size.aspect"
@@ -14,18 +13,19 @@
 
   <Scene @scene="(v) => { scene = v }">
 
-    <!-- <CubeCamera
-      v-if="renderer && scene"
-      ref="cube-camera"
-      @cube-camera="(v) => { cubeCamera = v }"
-      :near="0.1"
-      :far="100000"
-      :cubeResolution="1024"
-      :renderer="renderer"
-      :scene="scene"
-    /> -->
+    <CubeTexture
+      :items="[
+        require('../textures/cubemap/shopping/px.png'), require('../textures/cubemap/shopping/nx.png'),
+        require('../textures/cubemap/shopping/py.png'), require('../textures/cubemap/shopping/ny.png'),
+        require('../textures/cubemap/shopping/pz.png'), require('../textures/cubemap/shopping/nz.png')
+      ]"
+      @cube-texture="(v) => { cubeTexture = v }"
+    ></CubeTexture>
 
-    <!-- <Refractor :position="{ x: 0, y: 0, z: 3 }" ref="refractor" /> -->
+    <Mesh @mesh="(v) => { refractionBox = v }">
+      <BoxBufferGeometry></BoxBufferGeometry>
+      <MeshBasicMaterial></MeshBasicMaterial>
+    </Mesh>
 
     <Object3D
       :pz="lig.p.z" :py="lig.p.y" :px="lig.p.x"
@@ -77,6 +77,8 @@ export default {
   },
   data () {
     return {
+      refractionBox: false,
+      cubeTexture: false,
       cam: {
         pos: { x: -3, y: 0, z: 10 }
       },
@@ -107,24 +109,46 @@ export default {
         this.ready = true
       }
     },
-    using () {
-      this.resizer()
-    },
     ready () {
       if (this.ready) {
         this.setup()
       }
     },
-    cubeCamera () {
-      // this.scene.background = this.cubeCamera.renderTarget.texture
+    refractionBox () {
+      this.trySetupReFraction()
+    },
+    cubeTexture () {
+      this.trySetupReFraction()
     }
   },
   methods: {
+    trySetupReFraction () {
+      if (this.cubeTexture && this.refractionBox) {
+        this.renderer.setClearColor(0xeeeeee)
+        this.renderer.setFaceCulling(THREE.CullFaceNone)
+        this.scene.background = this.cubeTexture
+        this.cubeTexture.format = THREE.RGBFormat
+        this.cubeTexture.needsUpdate = true
+
+        let material = this.refractionBox.material
+        material.color = new THREE.Color(0xeeeeee)
+        material.refractionRatio = 0.98
+        material.reflectionRatio = 0.98
+        material.envMap = this.cubeTexture
+        material.envMap.mapping = THREE.CubeRefractionMapping
+        material.needsUpdate = true
+      }
+    },
     setup () {
-      this.renderer.setClearColor(0xeeeeee)
+      // this.scene.background
+      // this.renderer.setClearColor(0xeeeeee)
     },
     renderWebGL () {
       TWEEN.update()
+      if (this.refractionBox) {
+        this.refractionBox.rotation.x -= 0.01
+        this.refractionBox.rotation.y += 0.01
+      }
       if (this.scene && this.camera && this.renderer) {
         this.funcRunner()
         this.renderer.render(this.scene, this.camera)

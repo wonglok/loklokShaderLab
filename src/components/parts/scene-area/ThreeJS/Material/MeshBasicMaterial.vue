@@ -8,7 +8,7 @@ export default {
   props: {
     color: {
       default () {
-        return Math.random() * 0xffffff
+        return new THREE.Color(Math.random() * 0xffffff)
       }
     }
   },

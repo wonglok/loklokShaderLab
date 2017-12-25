@@ -1,4 +1,5 @@
 export default {
+  CubeTexture: require('./System/CubeTexture.vue').default,
   CubeMapTarget: require('./System/CubeMapTarget.vue').default,
   OrbitControls: require('./System/OrbitControls.vue').default,
   Renderer: require('./System/Renderer.vue').default,

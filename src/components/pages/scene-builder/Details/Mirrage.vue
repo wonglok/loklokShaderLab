@@ -148,8 +148,13 @@ export default {
   methods: {
     tryConfigSkyBox () {
       if (this.skybox && this.cubeCamera) {
-        this.skybox.material.envMap = this.cubeCamera.camera.renderTarget.texture
+        let texture = this.cubeCamera.camera.renderTarget.texture
+        this.skybox.material.envMap = texture
         this.skybox.material.side = THREE.BackSide
+        // this.skybox.material.mapping = THREE.CubeRefractionMapping
+        // texture.wrapS = THREE.RepeatWrapping
+        // texture.repeat.x = -1
+        // this.skybox.material.needsUpdate = true
       }
     },
     setup () {

@@ -45,7 +45,7 @@ export const makeBall = () => {
     material: MaterialType.ShaderMaterial,
 
     ...makePos(),
-    p: { x: 2, y: 0, z: 0 },
+    p: { x: 3, y: 0, z: 0 },
 
     shader: {
       doc: JSON.parse(JSON.stringify(require('./SampleShaderGraph-ball.json'))),
@@ -70,7 +70,7 @@ export const makeBox = () => {
     material: MaterialType.ShaderMaterial,
 
     ...makePos(),
-    p: { x: -2, y: 0, z: 0 },
+    p: { x: -3, y: 0, z: 0 },
 
     shader: {
       doc: JSON.parse(JSON.stringify(require('./SampleShaderGraph-box.json'))),
