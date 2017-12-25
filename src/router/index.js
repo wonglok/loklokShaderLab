@@ -12,6 +12,7 @@ import CubeCam from '@/components/pages/scene-builder/Details/CubeCam.vue'
 
 import Fresnel from '@/components/pages/scene-builder/Details/Fresnel.vue'
 import Refraction from '@/components/pages/scene-builder/Details/Refraction.vue'
+import Woozy from '@/components/pages/scene-builder/Details/Woozy.vue'
 
 Vue.use(Router)
 
@@ -45,6 +46,10 @@ export default new Router({
         {
           path: 'refraction',
           component: Refraction
+        },
+        {
+          path: 'woozy',
+          component: Woozy
         }
       ]
     },

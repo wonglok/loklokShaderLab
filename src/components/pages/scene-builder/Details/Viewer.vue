@@ -12,9 +12,7 @@
   />
 
   <Scene @scene="(v) => { scene = v }">
-
     <SceneReader :doc="doc" ref="sceneReader" />
-
   </Scene>
 
 </div>
@@ -53,14 +51,6 @@ export default {
       camera: false
     }
   },
-  // computed: {
-  //   lights () {
-  //     return this.doc.current.lights
-  //   },
-  //   shaderFXs () {
-  //     return this.doc.current.shaderFXs
-  //   }
-  // },
   watch: {
     camera () {
       if (this.camera && this.renderer) {

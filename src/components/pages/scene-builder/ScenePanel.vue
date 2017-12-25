@@ -6,6 +6,7 @@
 
     <router-link to="/scene-builder/fresnel">fresnel</router-link>
     <router-link to="/scene-builder/refraction">refraction</router-link>
+    <router-link to="/scene-builder/woozy">woozy</router-link>
 
     <div
       :key="iFX" v-for="(fx, iFX) in shaderFXs"
@@ -16,7 +17,7 @@
       <SVGConnector :importDoc="fx.shader.doc" @close="() => { editingShader = false }" @shader="(v) => { fx.shader.vs = v.vs; fx.shader.fs = v.fs }" />
     </div>
 
-    <div class="panel" :class="{ hide: editingShader }" v-if="!editingShader">
+    <div :class="{ hide: editingShader }" v-if="!editingShader">
       <div :key="iFX" v-for="(fx, iFX) in shaderFXs">
         <div v-if="!editingShader" >
             <select v-model="fx.elementType">
@@ -138,10 +139,8 @@ export default {
   top: 0px;
   /* -webkit-overflow-scrolling: touch; */
 }
-.panel{
-  height: 100%;
-}
-.panel.hide{
+
+.hide{
   display: none;
 }
 .noline{

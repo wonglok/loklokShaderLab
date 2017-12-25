@@ -22,7 +22,7 @@
       @cube-texture="(v) => { cubeTexture = v }"
     ></CubeTexture>
 
-    <Mesh @mesh="(v) => { refractionBox = v }">
+    <Mesh @element="(v) => { refractionBox = v }">
       <BoxBufferGeometry></BoxBufferGeometry>
       <MeshBasicMaterial></MeshBasicMaterial>
     </Mesh>

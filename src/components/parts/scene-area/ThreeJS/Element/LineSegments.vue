@@ -22,6 +22,7 @@ export default {
   created () {
     this.element = this.lineSegments = new THREE.LineSegments()
     this.$parent.$emit('add', this.lineSegments)
+    this.$emit('element', this.element)
 
     this.$on('material', (v) => {
       this.material = v

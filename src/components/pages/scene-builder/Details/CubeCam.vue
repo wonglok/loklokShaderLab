@@ -30,7 +30,7 @@
       :rz="0.0" :ry="0.0" :rx="0.0"
       :sz="10" :sy="10" :sx="10"
     >
-      <Mesh @mesh="(v) => { skybox = v }">
+      <Mesh @element="(v) => { skybox = v }">
         <SphereBufferGeometry></SphereBufferGeometry>
         <MeshLambertMaterial :color="0xeeeeee"></MeshLambertMaterial>
       </Mesh>
@@ -98,14 +98,6 @@ export default {
     }
   },
   methods: {
-    tryConfigSkyBox () {
-      if (this.skybox && this.cubeCamera) {
-        let texture = this.cubeCamera.camera.renderTarget.texture
-        this.skybox.material.envMap = texture
-        this.skybox.material.side = THREE.BackSide
-        this.skybox.material.needsUpdate = true
-      }
-    },
     setup () {
       this.renderer.setClearColor(0xffffff)
     },
@@ -125,6 +117,14 @@ export default {
         this.skybox.visible = false
         this.cubeCamera.update()
         this.skybox.visible = true
+      }
+    },
+    tryConfigSkyBox () {
+      if (this.skybox && this.cubeCamera) {
+        let texture = this.cubeCamera.camera.renderTarget.texture
+        this.skybox.material.envMap = texture
+        this.skybox.material.side = THREE.BackSide
+        this.skybox.material.needsUpdate = true
       }
     }
   },

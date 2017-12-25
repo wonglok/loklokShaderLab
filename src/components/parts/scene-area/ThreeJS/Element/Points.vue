@@ -22,7 +22,7 @@ export default {
   created () {
     this.element = this.points = new THREE.Points()
     this.$parent.$emit('add', this.points)
-
+    this.$emit('element', this.points)
     this.$on('material', (v) => {
       this.material = v
       this.tryUpdateMaterial()

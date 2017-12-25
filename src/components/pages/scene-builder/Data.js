@@ -39,7 +39,7 @@ export const makePointLight = () => {
 
 export const makeBall = () => {
   return {
-    elementType: ElementType.LineSegments,
+    elementType: ElementType.Points,
     // geometry: 'SphereBufferGeometry',
     geometry: GeoType.Ball,
     material: MaterialType.ShaderMaterial,
@@ -64,7 +64,7 @@ element.rotation.y += 0.01;`
 
 export const makeBox = () => {
   return {
-    elementType: ElementType.Points,
+    elementType: ElementType.LineSegments,
     // geometry: 'SphereBufferGeometry',
     geometry: GeoType.Box,
     material: MaterialType.ShaderMaterial,
