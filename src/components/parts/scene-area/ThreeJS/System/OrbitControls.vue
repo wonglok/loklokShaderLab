@@ -19,6 +19,10 @@ export default {
   },
   mounted () {
     this.controls = new THREE.OrbitControls(this.camera, this.toucher)
+    this.$emit('controls', this.controls)
+  },
+  beforeDestroy () {
+    this.controls.dispose()
   }
 }
 </script>

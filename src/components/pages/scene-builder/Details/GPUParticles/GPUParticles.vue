@@ -1,0 +1,139 @@
+<template>
+<div></div>
+</template>
+
+<script>
+import GPUComputationRenderer from '@/components/parts/scene-area/ThreeJS/System/GPUComputationRenderer.js'
+import * as THREE from 'three'
+
+function fillTexture (texture, WIDTH) {
+  var pixels = texture.image.data
+  var p = 0
+  for (var j = 0; j < WIDTH; j++) {
+    for (var i = 0; i < WIDTH; i++) {
+      var x = (WIDTH / 2 - i) * 128 / WIDTH
+      var y = (WIDTH / 2 - j) * 128 / WIDTH
+
+      pixels[p + 0] = x
+      pixels[p + 1] = y
+
+      pixels[p + 2] = 0 // noise(Math.sin(x), Math.sin(y), 0.0)
+      pixels[p + 3] = 0
+      p += 4
+    }
+  }
+}
+
+export default {
+  props: {
+    camera: {},
+    renderer: {},
+    scene: {}
+  },
+  data () {
+    return {
+      displayMaterial: false,
+      gpuCompute: false,
+      getTexture: () => {},
+      runSim: () => {},
+      updateMouse: () => {}
+    }
+  },
+  mounted () {
+    this.camera.position.z = 165
+
+    var WIDTH = 256
+    var renderer = this.renderer
+    var gpuCompute = this.gpuCompute = new GPUComputationRenderer(WIDTH, WIDTH, renderer)
+    var pos0 = gpuCompute.createTexture()
+    var vel0 = gpuCompute.createTexture()
+
+    fillTexture(pos0, WIDTH)
+    fillTexture(vel0, WIDTH)
+
+    var velVar = gpuCompute.addVariable('velTex', require('./velocity.frag'), vel0)
+    var posVar = gpuCompute.addVariable('posTex', require('./position.frag'), pos0)
+    gpuCompute.setVariableDependencies(velVar, [velVar, posVar])
+    gpuCompute.setVariableDependencies(posVar, [velVar, posVar])
+
+    velVar.material.uniforms = {
+      time: { value: 0.0 },
+      mouse: { value: new THREE.Vector2(0, 0) }
+    }
+
+    this.updateMouse = (x, y) => {
+      var velocity = velVar.material.uniforms.mouse.value
+      velocity.x = x
+      velocity.y = y
+    }
+
+    this.getTexture = () => {
+      return {
+        velTex: gpuCompute.getCurrentRenderTarget(velVar).texture,
+        posTex: gpuCompute.getCurrentRenderTarget(posVar).texture
+      }
+    }
+
+    this.runSim = () => {
+      velVar.material.uniforms.time.value = window.performance.now() / 1000
+      gpuCompute.compute()
+    }
+
+    var error = gpuCompute.init()
+    if (error !== null) {
+      alert(error)
+      console.error(error)
+    }
+
+    // -0-0-0-0-0-0-0-
+
+    var particleV = require('./particle.vert')
+    var particleF = require('./particle.frag')
+
+    var geometry = new THREE.PlaneBufferGeometry(30, 30, WIDTH - 1, WIDTH - 1)
+    var material = this.displayMaterial = new THREE.ShaderMaterial({
+      blending: THREE.AdditiveBlending,
+      depthTest: false,
+      transparent: true,
+      vertexShader: particleV,
+      fragmentShader: particleF,
+      uniforms: {
+        opacity: { value: 0.5 },
+        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        picture: { value: new THREE.TextureLoader().load('https://picsum.photos/200/300/?gravity=east') },
+        pointSize: { value: window.devicePixelRatio || 1.0 },
+        posTex: { value: null },
+        velTex: { value: null }
+      }
+    })
+
+    var points = this.points = new THREE.Points(geometry, material)
+    points.matrixAutoUpdate = false
+    points.updateMatrix()
+
+    this.scene.background = new THREE.Color(0x000000)
+
+    this.$parent.$emit('add', points)
+    this.$emit('gpgpu', this)
+  },
+  beforeDestroy () {
+    this.$parent.$emit('remove', this.points)
+  },
+  methods: {
+    update () {
+      if (this.displayMaterial) {
+        let { posTex, velTex } = this.getTexture()
+        if (posTex && velTex) {
+          this.displayMaterial.uniforms.posTex.value = posTex
+          this.displayMaterial.uniforms.velTex.value = velTex
+          this.runSim()
+        }
+      }
+    }
+  }
+}
+</script>
+
+<style>
+
+</style>

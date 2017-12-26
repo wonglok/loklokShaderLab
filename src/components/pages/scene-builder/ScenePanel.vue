@@ -7,6 +7,7 @@
     <router-link to="/scene-builder/fresnel">fresnel</router-link>
     <router-link to="/scene-builder/refraction">refraction</router-link>
     <router-link to="/scene-builder/woozy">woozy</router-link>
+    <router-link to="/scene-builder/gpuparticles">gpuparticles</router-link>
 
     <div
       :key="iFX" v-for="(fx, iFX) in shaderFXs"

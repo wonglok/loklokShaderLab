@@ -52,9 +52,9 @@ varying float vReflectionFactor;
 void main() {
   vec3 funPos = position;
 
-  funPos.x += funPos.x * cnoise(funPos.x + vec2(0.0) + time) * 0.25;
-  funPos.y += funPos.y * cnoise(funPos.y + vec2(0.0) + time) * 0.25;
-  funPos.z += funPos.z * cnoise(funPos.z + vec2(0.0) + time) * 0.25;
+  funPos.x += funPos.x * cnoise(normal.x + vec2(0.0) + time) * 0.3;
+  funPos.y += funPos.y * cnoise(normal.y + vec2(0.0) + time) * 0.3;
+  funPos.z += funPos.z * cnoise(normal.z + vec2(0.0) + time) * 0.3;
 
   vec4 mvPosition = modelViewMatrix * vec4( funPos, 1.0 );
   vec4 worldPosition = modelMatrix * vec4( funPos, 1.0 );

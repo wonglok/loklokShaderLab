@@ -28,11 +28,11 @@
     <Object3D
       :pz="0.0" :py="0.0" :px="0.0"
       :rz="0.0" :ry="0.0" :rx="0.0"
-      :sz="10" :sy="10" :sx="10"
+      :sz="30" :sy="30" :sx="30"
     >
       <Mesh @element="(v) => { skybox = v }">
         <SphereBufferGeometry></SphereBufferGeometry>
-        <MeshLambertMaterial :color="0xeeeeee"></MeshLambertMaterial>
+        <MeshBasicMaterial :color="0xeeeeee"></MeshBasicMaterial>
       </Mesh>
     </Object3D>
 

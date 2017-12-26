@@ -61,6 +61,7 @@ export default {
     }
   },
   created () {
+    // event bubble up
     this.$on('add', (v) => {
       this.$parent.$emit('add', v)
     })

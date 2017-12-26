@@ -11,6 +11,11 @@ varying float vReflectionFactor;
 
 void main() {
   vec3 funPos = position;
+  // vec3 newNormal = normal;
+  // newNormal.y += newNormal.y * sin(newNormal.y * 3.0 + time * 3.1415);
+  // newNormal.x += newNormal.x * sin(newNormal.x * 3.0 + time * 3.1415);
+  // newNormal.z += newNormal.z * sin(newNormal.z * 3.0 + time * 3.1415);
+  // funPos += newNormal * 0.1;
 
   funPos.y += sin(funPos.y * 3.0 + time * 3.1415);
 

@@ -13,6 +13,7 @@ import CubeCam from '@/components/pages/scene-builder/Details/CubeCam.vue'
 import Fresnel from '@/components/pages/scene-builder/Details/Fresnel.vue'
 import Refraction from '@/components/pages/scene-builder/Details/Refraction.vue'
 import Woozy from '@/components/pages/scene-builder/Details/Woozy.vue'
+import GPUParticles from '@/components/pages/scene-builder/Details/GPUParticles.vue'
 
 Vue.use(Router)
 
@@ -50,6 +51,10 @@ export default new Router({
         {
           path: 'woozy',
           component: Woozy
+        },
+        {
+          path: 'gpuparticles',
+          component: GPUParticles
         }
       ]
     },
