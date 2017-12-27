@@ -40,18 +40,18 @@
     />
 
     <Object3D
-      :px="2" :py="0.0" :pz="4"
+      :px="2" :py="1.0" :pz="4"
       :rx="0.0" :ry="0.0" :rz="0.0"
-      :sx="1.0" :sy="1.0" :sz="1.0"
+      :sx="0.18" :sy="0.18" :sz="0.18"
     >
       <Mesh @element="(v) => { refractionBoxAlpha = v }">
-        <SphereBufferGeometry></SphereBufferGeometry>
+        <TorusKnotBufferGeometry></TorusKnotBufferGeometry>
         <MeshBasicMaterial></MeshBasicMaterial>
       </Mesh>
     </Object3D>
 
     <Object3D
-      :px="-2" :py="0.0" :pz="4"
+      :px="-2" :py="1.0" :pz="4"
       :rx="0.0" :ry="0.0" :rz="0.0"
       :sx="1.0" :sy="1.0" :sz="1.0"
     >
@@ -214,8 +214,10 @@ export default {
         this.refractionBoxAlpha.visible = false
         this.refractionBoxBeta.visible = false
         this.wrapper.scale.x = -1
+
         this.cubeCamera.position.copy(this.refractionBoxAlpha.parent.position)
         this.cubeCamera.position.x = (this.refractionBoxAlpha.parent.position.x + this.refractionBoxBeta.parent.position.x) / 2
+
         this.cubeCamera.update(this.renderer, this.scene)
         this.wrapper.scale.x = 1
         this.refractionBoxAlpha.visible = true

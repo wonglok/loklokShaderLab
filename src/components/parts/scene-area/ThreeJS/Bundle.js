@@ -20,8 +20,10 @@ export default {
   ShaderMaterial: require('./Material/ShaderMaterial.vue').default,
   MeshBasicMaterial: require('./Material/MeshBasicMaterial.vue').default,
 
+  TorusKnotBufferGeometry: require('./Geo/TorusKnotBufferGeometry.vue').default,
   SphereBufferGeometry: require('./Geo/SphereBufferGeometry.vue').default,
   BoxBufferGeometry: require('./Geo/BoxBufferGeometry.vue').default,
+  PlaneBufferGeometry: require('./Geo/PlaneBufferGeometry.vue').default,
 
   dummy: {}
 }

@@ -15,6 +15,7 @@ import Refraction from '@/components/pages/scene-builder/Details/Refraction.vue'
 import Woozy from '@/components/pages/scene-builder/Details/Woozy.vue'
 import GPUParticles from '@/components/pages/scene-builder/Details/GPUParticles.vue'
 import RefractScene from '@/components/pages/scene-builder/Details/RefractScene.vue'
+import TwistedBoxTube from '@/components/pages/scene-builder/Details/TwistedBoxTube.vue'
 
 Vue.use(Router)
 
@@ -60,6 +61,10 @@ export default new Router({
         {
           path: 'refractscene',
           component: RefractScene
+        },
+        {
+          path: 'twistedboxtube',
+          component: TwistedBoxTube
         }
       ]
     },
