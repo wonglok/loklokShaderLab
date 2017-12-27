@@ -81,7 +81,7 @@ export default {
       refractionBox: false,
       cubeTexture: false,
       cam: {
-        pos: { x: -3, y: 0, z: 10 }
+        pos: { x: 0, y: 0, z: 10 }
       },
       ready: false,
       cubeCamera: false,
@@ -145,8 +145,8 @@ export default {
         let material = new THREE.ShaderMaterial({
           uniforms: uniforms,
 
-          vertexShader: require('./WoozyShaders/Solid.vert'),
-          fragmentShader: require('./WoozyShaders/Solid.frag'),
+          vertexShader: require('./WoozyShaders/SolidPerlin.vert'),
+          fragmentShader: require('./WoozyShaders/SolidPerlin.frag'),
 
           // vertexShader: shader.vertexShader,
           // fragmentShader: shader.fragmentShader,
@@ -187,7 +187,6 @@ export default {
         this.refractionBox.visible = false
         this.wrapper.scale.x = -1
         this.cubeCamera.position.copy(this.refractionBox.parent.position)
-
         this.cubeCamera.update(this.renderer, this.scene)
         this.wrapper.scale.x = 1
         this.refractionBox.visible = true
