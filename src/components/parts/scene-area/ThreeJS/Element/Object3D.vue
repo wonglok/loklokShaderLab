@@ -40,6 +40,7 @@ export default {
   },
   created () {
     this.object3d = new THREE.Object3D()
+    this.$emit('element', this.object3d)
     this.object3d.visible = true
     this.updatePosition()
     this.updateScale()

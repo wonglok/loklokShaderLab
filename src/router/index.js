@@ -14,6 +14,7 @@ import Fresnel from '@/components/pages/scene-builder/Details/Fresnel.vue'
 import Refraction from '@/components/pages/scene-builder/Details/Refraction.vue'
 import Woozy from '@/components/pages/scene-builder/Details/Woozy.vue'
 import GPUParticles from '@/components/pages/scene-builder/Details/GPUParticles.vue'
+import RefractScene from '@/components/pages/scene-builder/Details/RefractScene.vue'
 
 Vue.use(Router)
 
@@ -55,6 +56,10 @@ export default new Router({
         {
           path: 'gpuparticles',
           component: GPUParticles
+        },
+        {
+          path: 'refractscene',
+          component: RefractScene
         }
       ]
     },

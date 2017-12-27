@@ -8,6 +8,7 @@
     <router-link to="/scene-builder/refraction">refraction</router-link>
     <router-link to="/scene-builder/woozy">woozy</router-link>
     <router-link to="/scene-builder/gpuparticles">gpuparticles</router-link>
+    <router-link to="/scene-builder/refractscene">refractscene</router-link>
 
     <div
       :key="iFX" v-for="(fx, iFX) in shaderFXs"

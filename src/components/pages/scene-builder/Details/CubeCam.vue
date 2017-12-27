@@ -15,20 +15,17 @@
   <Scene @scene="(v) => { scene = v }">
 
     <CubeCamera
-      v-if="renderer && scene && camera"
+      v-if="renderer && scene"
       @cube-camera="(v) => { cubeCamera = v }"
       :near="0.1"
       :far="1000000"
-      :sceneCamera="camera"
-      :cubeResolution="1024"
-      :renderer="renderer"
-      :scene="scene"
+      :resolution="1024"
     />
 
     <Object3D
       :pz="0.0" :py="0.0" :px="0.0"
       :rz="0.0" :ry="0.0" :rx="0.0"
-      :sz="30" :sy="30" :sx="30"
+      :sz="300" :sy="300" :sx="300"
     >
       <Mesh @element="(v) => { skybox = v }">
         <SphereBufferGeometry></SphereBufferGeometry>
@@ -113,15 +110,15 @@ export default {
       }
     },
     renderCubeCamera () {
-      if (this.cubeCamera && this.skybox) {
+      if (this.cubeCamera && this.skybox && this.renderer && this.scene) {
         this.skybox.visible = false
-        this.cubeCamera.update()
+        this.cubeCamera.update(this.renderer, this.scene)
         this.skybox.visible = true
       }
     },
     tryConfigSkyBox () {
       if (this.skybox && this.cubeCamera) {
-        let texture = this.cubeCamera.camera.renderTarget.texture
+        let texture = this.cubeCamera.renderTarget.texture
         this.skybox.material.envMap = texture
         this.skybox.material.side = THREE.BackSide
         this.skybox.material.needsUpdate = true

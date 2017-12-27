@@ -28,6 +28,7 @@
         @gpgpu="(v) => { gpuParticles = v }"
       ></GPUParticles>
     </Object3D>
+
   </Scene>
 
 </div>

@@ -33,7 +33,7 @@ export const makePointLight = () => {
   return {
     lightType: LightType.PointLight,
     ...makePos(),
-    p: { x: 0, y: 0, z: 5 }
+    p: { x: 0, y: 5, z: 5 }
   }
 }
 
