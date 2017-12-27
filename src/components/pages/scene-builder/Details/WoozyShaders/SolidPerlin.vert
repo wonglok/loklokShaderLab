@@ -48,8 +48,10 @@ uniform float time;
 varying vec3 vReflect;
 varying vec3 vRefract[3];
 varying float vReflectionFactor;
+varying vec2 vUv;
 
 void main() {
+  vUv = uv;
   vec3 funPos = position;
 
   funPos.x += funPos.x * cnoise(normal.x + vec2(0.0) + time) * 0.3;

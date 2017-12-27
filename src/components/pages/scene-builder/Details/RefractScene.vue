@@ -40,11 +40,22 @@
     />
 
     <Object3D
-      :px="0.0" :py="0.0" :pz="4"
+      :px="2" :py="0.0" :pz="4"
       :rx="0.0" :ry="0.0" :rz="0.0"
       :sx="1.0" :sy="1.0" :sz="1.0"
     >
-      <Mesh @element="(v) => { refractionBox = v }">
+      <Mesh @element="(v) => { refractionBoxAlpha = v }">
+        <SphereBufferGeometry></SphereBufferGeometry>
+        <MeshBasicMaterial></MeshBasicMaterial>
+      </Mesh>
+    </Object3D>
+
+    <Object3D
+      :px="-2" :py="0.0" :pz="4"
+      :rx="0.0" :ry="0.0" :rz="0.0"
+      :sx="1.0" :sy="1.0" :sz="1.0"
+    >
+      <Mesh @element="(v) => { refractionBoxBeta = v }">
         <SphereBufferGeometry></SphereBufferGeometry>
         <MeshBasicMaterial></MeshBasicMaterial>
       </Mesh>
@@ -78,7 +89,8 @@ export default {
   data () {
     return {
       wrapper: false,
-      refractionBox: false,
+      refractionBoxAlpha: false,
+      refractionBoxBeta: false,
       cubeTexture: false,
       cam: {
         pos: { x: 0, y: 0, z: 10 }
@@ -107,7 +119,10 @@ export default {
         this.setup()
       }
     },
-    refractionBox () {
+    refractionBoxAlpha () {
+      this.trySetupReFraction()
+    },
+    refractionBoxBeta () {
       this.trySetupReFraction()
     },
     cubeTexture () {
@@ -119,7 +134,7 @@ export default {
   },
   methods: {
     trySetupReFraction () {
-      if (this.cubeTexture && this.refractionBox && this.cubeCamera) {
+      if (this.cubeTexture && this.refractionBoxAlpha && this.refractionBoxBeta && this.cubeCamera) {
         // this.renderer.setClearColor(0xeeeeee)
         // this.renderer.setFaceCulling(THREE.CullFaceNone)
         // this.cubeTexture.format = THREE.RGBFormat
@@ -136,26 +151,35 @@ export default {
           'mFresnelPower': { value: 2.0 },
           'mFresnelScale': { value: 1.0 },
           'tCube': { value: null },
-          'time': { value: 0 }
+          'time': { value: 0 },
+          'tDudv': { value: null },
+          'useDudv': { value: false }
         }
-        // this.cubeCamera.renderTarget.texture.mapping = THREE.CubeRefractionMapping
-        // this.cubeCamera.renderTarget.texture.flipY = true
-        uniforms['tCube'].value = this.cubeCamera.renderTarget.texture
+        let tDudvTexture = new THREE.TextureLoader().load(require('../textures/maps/waterdudv.jpg'))
+        let uniforms1 = THREE.UniformsUtils.clone(uniforms)
+        uniforms1['tCube'].value = this.cubeCamera.renderTarget.texture
+        uniforms1['tDudv'].value = tDudvTexture
 
-        let material = new THREE.ShaderMaterial({
-          uniforms: uniforms,
+        let uniforms2 = THREE.UniformsUtils.clone(uniforms)
+        uniforms2['tCube'].value = this.cubeCamera.renderTarget.texture
+        uniforms2['tDudv'].value = tDudvTexture
+        uniforms2['useDudv'].value = true
 
+        let material1 = new THREE.ShaderMaterial({
+          uniforms: uniforms1,
           vertexShader: require('./WoozyShaders/SolidPerlin.vert'),
           fragmentShader: require('./WoozyShaders/SolidPerlin.frag'),
-
-          // vertexShader: shader.vertexShader,
-          // fragmentShader: shader.fragmentShader,
-          // side: THREE.Double,
           mapping: THREE.CubeRefractionMapping
         })
-        this.refractionBox.material = material
-
-        // let material = this.refractionBox.material
+        let material2 = new THREE.ShaderMaterial({
+          uniforms: uniforms2,
+          vertexShader: require('./WoozyShaders/SolidPerlin.vert'),
+          fragmentShader: require('./WoozyShaders/SolidPerlin.frag'),
+          mapping: THREE.CubeRefractionMapping
+        })
+        this.refractionBoxAlpha.material = material1
+        this.refractionBoxBeta.material = material2
+        // let material = this.refractionBoxAlpha.material
         // material.color = new THREE.Color(0xeeeeee)
         // material.refractionRatio = 0.98
         // material.reflectionRatio = 0.98
@@ -170,26 +194,32 @@ export default {
     },
     renderWebGL () {
       TWEEN.update()
-      // if (this.refractionBox) {
-      //   this.refractionBox.rotation.x -= 0.01
-      //   this.refractionBox.rotation.y += 0.01
+      // if (this.refractionBoxAlpha) {
+      //   this.refractionBoxAlpha.rotation.x -= 0.01
+      //   this.refractionBoxAlpha.rotation.y += 0.01
       // }
       if (this.$refs.sceneReader) {
         this.$refs.sceneReader.funcRunner()
       }
-      if (this.refractionBox && this.refractionBox.material.uniforms) {
-        this.refractionBox.material.uniforms.time.value = window.performance.now() / 1000
+      if (this.refractionBoxAlpha && this.refractionBoxAlpha.material.uniforms) {
+        this.refractionBoxAlpha.material.uniforms.time.value = window.performance.now() / 1000
       }
-      if (this.cubeCamera && this.refractionBox && this.wrapper) {
+      if (this.refractionBoxBeta && this.refractionBoxBeta.material.uniforms) {
+        this.refractionBoxBeta.material.uniforms.time.value = window.performance.now() / 1000
+      }
+      if (this.cubeCamera && this.refractionBoxAlpha && this.wrapper) {
         // this.cubeCamera.rotation.z = -3.1415
         // this.cubeCamera.position.z = this.camera.position.z
         // this.cubeCamera.rotation.copy(this.camera.rotation)
-        this.refractionBox.visible = false
+        this.refractionBoxAlpha.visible = false
+        this.refractionBoxBeta.visible = false
         this.wrapper.scale.x = -1
-        this.cubeCamera.position.copy(this.refractionBox.parent.position)
+        this.cubeCamera.position.copy(this.refractionBoxAlpha.parent.position)
+        this.cubeCamera.position.x = (this.refractionBoxAlpha.parent.position.x + this.refractionBoxBeta.parent.position.x) / 2
         this.cubeCamera.update(this.renderer, this.scene)
         this.wrapper.scale.x = 1
-        this.refractionBox.visible = true
+        this.refractionBoxAlpha.visible = true
+        this.refractionBoxBeta.visible = true
       }
       if (this.scene && this.camera && this.renderer) {
         this.renderer.render(this.scene, this.camera)
