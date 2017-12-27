@@ -40,7 +40,7 @@ export default {
     }
   },
   mounted () {
-    this.camera.position.z = 165
+    this.camera.position.z = 20
 
     var WIDTH = 256
     var renderer = this.renderer
@@ -86,17 +86,13 @@ export default {
     }
 
     // -0-0-0-0-0-0-0-
-
-    var particleV = require('./particle.vert')
-    var particleF = require('./particle.frag')
-
-    var geometry = new THREE.PlaneBufferGeometry(30, 30, WIDTH - 1, WIDTH - 1)
+    var geometry = new THREE.PlaneBufferGeometry(3.0, 3.0, WIDTH - 1, WIDTH - 1)
     var material = this.displayMaterial = new THREE.ShaderMaterial({
       blending: THREE.AdditiveBlending,
       depthTest: false,
       transparent: true,
-      vertexShader: particleV,
-      fragmentShader: particleF,
+      vertexShader: require('./particle.vert'),
+      fragmentShader: require('./particle.frag'),
       uniforms: {
         opacity: { value: 0.5 },
         resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },

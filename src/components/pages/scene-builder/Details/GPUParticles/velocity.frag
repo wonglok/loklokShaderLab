@@ -24,7 +24,7 @@ vec3 getDiff (in vec3 lastPos, in vec3 mousePos) {
 void main() {
     vec2 uv = gl_FragCoord.xy / resolution.xy;
 
-  vec4 lastVel = texture2D( velTex, uv );
+    vec4 lastVel = texture2D( velTex, uv );
     vec4 lastPos = texture2D( posTex, uv );
 
     vec3 diff = getDiff( lastPos.xyz, vec3(mouse, 0.1) );

@@ -72,7 +72,7 @@ void main() {
     float el = 0.0;
     vec3 noiser = vec3(lastPos);
 
-    noiser += rand(lastVel.xy) * 0.0000001;
+    noiser += rand(lastVel.xy) * 0.0000001 * 0.01;
 
     // noiser += cnoise(lastPos.xy) * 2.5;
     // noiser += sin(lastPos.x * 0.3) * 2.5;

@@ -12,14 +12,22 @@
   />
 
   <Scene @scene="(v) => { scene = v }">
-    <!-- <SceneReader :doc="doc" ref="sceneReader" /> -->
-    <GPUParticles
-      v-if="renderer && camera && scene"
-      :renderer="renderer"
-      :camera="camera"
-      :scene="scene"
-      @gpgpu="(v) => { gpuParticles = v }"
-    ></GPUParticles>
+
+    <SceneReader :doc="doc" ref="sceneReader" />
+
+    <Object3D
+      :pz="0.0" :py="0.0" :px="0.0"
+      :rz="0.0" :ry="0.0" :rx="0.0"
+      :sz="0.1" :sy="0.1" :sx="0.1"
+    >
+      <GPUParticles
+        v-if="renderer && camera && scene"
+        :renderer="renderer"
+        :camera="camera"
+        :scene="scene"
+        @gpgpu="(v) => { gpuParticles = v }"
+      ></GPUParticles>
+    </Object3D>
   </Scene>
 
 </div>
@@ -115,9 +123,9 @@ export default {
         this.refractionBox.rotation.x -= 0.01
         this.refractionBox.rotation.y += 0.01
       }
-      // if (this.$refs.sceneReader) {
-      //   this.$refs.sceneReader.funcRunner()
-      // }
+      if (this.$refs.sceneReader) {
+        this.$refs.sceneReader.funcRunner()
+      }
 
       if (this.gpuParticles) {
         if (this.gpuParticles.updateMouse) {
