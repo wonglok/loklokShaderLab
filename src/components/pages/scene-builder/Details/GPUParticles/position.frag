@@ -1,4 +1,6 @@
 #include <common>
+uniform sampler2D resTex;
+uniform vec2 mouse;
 
 //  Classic Perlin 3D Noise
 //  by Stefan Gustavson
@@ -62,27 +64,46 @@ void toBall(vec3 pos, out float az, out float el) {
 // toBall(noiser, az, el);
 // lastVel.xyz = fromBall(1.0, az, el);
 
+vec3 resDiff (in vec3 lastPos, in vec3 mousePos) {
+  vec3 diff = lastPos - mousePos;
+  diff = normalize(diff) * -1.0;
+  return diff;
+}
+
+/*
+vec3 diff = resDiff( lastPos.xyz, vec3(mouse, 0.1) );
+lastVel.xyz += diff * 15.0;
+*/
+
 void main() {
     vec2 uv = gl_FragCoord.xy / resolution.xy;
 
     vec4 lastVel = texture2D( velTex, uv );
     vec4 lastPos = texture2D( posTex, uv );
+    vec4 lastRes = texture2D( resTex, uv );
 
-    float az = 0.0;
-    float el = 0.0;
-    vec3 noiser = vec3(lastPos);
 
-    noiser += rand(lastVel.xy) * 0.0000001 * 0.01;
+    if (mouse.x < 0.0) {
+      vec3 diff = resDiff(lastPos.xyz, lastRes.xyz);
+      lastPos.xyz += diff;
+      gl_FragColor = lastPos;
+    } else {
+      float az = 0.0;
+      float el = 0.0;
+      vec3 noiser = vec3(lastPos);
+      noiser += cnoise(lastPos.xy) * 2.5;
+      // noiser += sin(lastPos.x * 0.3) * 2.5;
+      noiser += sin(lastPos.y * 0.3) * 2.5;
 
-    // noiser += cnoise(lastPos.xy) * 2.5;
-    // noiser += sin(lastPos.x * 0.3) * 2.5;
-    // noiser += sin(lastPos.y * 0.3) * 2.5;
+      toBall(noiser, az, el);
+      lastPos.xyz = fromBall(65.0, az, el);
+      lastPos.xyz += lastVel.xyz;
+      gl_FragColor = lastPos;
+    }
 
-    toBall(noiser, az, el);
-    lastPos.xyz = fromBall(65.0, az, el);
-    lastPos.xyz += lastVel.xyz;
 
-    gl_FragColor = lastPos;
+
+    // gl_FragColor = lastRes;
 }
 
 

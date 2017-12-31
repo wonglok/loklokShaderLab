@@ -215,8 +215,10 @@ export default {
         this.refractionBoxBeta.visible = false
         this.wrapper.scale.x = -1
 
-        this.cubeCamera.position.copy(this.refractionBoxAlpha.parent.position)
+        // this.cubeCamera.position.z = this.refractionBoxAlpha.parent.position.z
         this.cubeCamera.position.x = (this.refractionBoxAlpha.parent.position.x + this.refractionBoxBeta.parent.position.x) / 2
+        this.cubeCamera.position.y = (this.refractionBoxAlpha.parent.position.y + this.refractionBoxBeta.parent.position.y) / 2
+        this.cubeCamera.position.z = (this.refractionBoxAlpha.parent.position.z + this.refractionBoxBeta.parent.position.z) / 2
 
         this.cubeCamera.update(this.renderer, this.scene)
         this.wrapper.scale.x = 1

@@ -14,8 +14,8 @@ function fillTexture (texture, WIDTH) {
       var x = (WIDTH / 2 - i) * 128 / WIDTH
       var y = (WIDTH / 2 - j) * 128 / WIDTH
 
-      pixels[p + 0] = x
-      pixels[p + 1] = y
+      pixels[p + 0] = x * 1.5
+      pixels[p + 1] = y * 1.5
 
       pixels[p + 2] = 0 // noise(Math.sin(x), Math.sin(y), 0.0)
       pixels[p + 3] = 0
@@ -47,24 +47,36 @@ export default {
     var gpuCompute = this.gpuCompute = new GPUComputationRenderer(WIDTH, WIDTH, renderer)
     var pos0 = gpuCompute.createTexture()
     var vel0 = gpuCompute.createTexture()
+    var res0 = gpuCompute.createTexture()
 
     fillTexture(pos0, WIDTH)
     fillTexture(vel0, WIDTH)
+    fillTexture(res0, WIDTH)
 
     var velVar = gpuCompute.addVariable('velTex', require('./velocity.frag'), vel0)
     var posVar = gpuCompute.addVariable('posTex', require('./position.frag'), pos0)
     gpuCompute.setVariableDependencies(velVar, [velVar, posVar])
     gpuCompute.setVariableDependencies(posVar, [velVar, posVar])
 
+    posVar.material.uniforms = {
+      mouse: { value: new THREE.Vector2(0, 0) },
+      resTex: { value: res0 }
+    }
+
     velVar.material.uniforms = {
       time: { value: 0.0 },
-      mouse: { value: new THREE.Vector2(0, 0) }
+      mouse: { value: new THREE.Vector2(0, 0) },
+      resTex: { value: res0 }
     }
 
     this.updateMouse = (x, y) => {
-      var velocity = velVar.material.uniforms.mouse.value
-      velocity.x = x
-      velocity.y = y
+      var positionMouse = posVar.material.uniforms.mouse.value
+      var velocityMouse = velVar.material.uniforms.mouse.value
+      velocityMouse.x = x
+      velocityMouse.y = y
+
+      positionMouse.x = x
+      positionMouse.y = y
     }
 
     this.getTexture = () => {
@@ -86,17 +98,17 @@ export default {
     }
 
     // -0-0-0-0-0-0-0-
-    var geometry = new THREE.PlaneBufferGeometry(3.0, 3.0, WIDTH - 1, WIDTH - 1)
+    var geometry = new THREE.PlaneBufferGeometry(3.0, 3.0, WIDTH, WIDTH)
     var material = this.displayMaterial = new THREE.ShaderMaterial({
       blending: THREE.AdditiveBlending,
-      depthTest: false,
+      // depthTest: false,
       transparent: true,
       vertexShader: require('./particle.vert'),
       fragmentShader: require('./particle.frag'),
       uniforms: {
         opacity: { value: 0.5 },
         resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-        picture: { value: new THREE.TextureLoader().load('https://picsum.photos/200/300/?gravity=east') },
+        picture: { value: new THREE.TextureLoader().load('https://picsum.photos/200/300') },
         pointSize: { value: window.devicePixelRatio || 1.0 },
         posTex: { value: null },
         velTex: { value: null }

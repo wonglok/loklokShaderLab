@@ -58,17 +58,20 @@ export default {
   methods: {
     configPlane (element, plane) {
       let { i, n } = plane
+
       element.material.side = THREE.DoubleSide
       element.material.opacity = 0.3
       element.material.color = new THREE.Color(`hsl(${Math.floor(i / n * 360)}, 100%, 50%)`)
       element.material.transparent = true
+      // element.material.map = new THREE.TextureLoader().load(require('../../textures/cubemap/shopping/nx.png'))
+
       element.material.needsUpdate = true
     },
     updateEachPlane (plane) {
       let { i, n, e } = plane
       let time = window.performance.now() / 1000
       plane.el.rotation.z = Math.PI * 2 * i / n + time * e
-      plane.p.z = e * (2 + 1 * Math.sin(time))
+      // plane.p.z = e * (2 + 1 * Math.sin(time))
     },
     update () {
       this.planes.forEach(this.updateEachPlane)
