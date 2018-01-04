@@ -17,8 +17,8 @@ function fillTexture (texture, WIDTH) {
       pixels[p + 0] = x * 1.5
       pixels[p + 1] = y * 1.5
 
-      pixels[p + 2] = 0 // noise(Math.sin(x), Math.sin(y), 0.0)
-      pixels[p + 3] = 0
+      pixels[p + 2] = 0.0
+      pixels[p + 3] = 0.0
       p += 4
     }
   }
@@ -108,7 +108,7 @@ export default {
       uniforms: {
         opacity: { value: 0.5 },
         resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-        picture: { value: new THREE.TextureLoader().load('https://picsum.photos/200/300') },
+        picture: { value: new THREE.TextureLoader().load('https://picsum.photos/200/300', (texture) => { texture.flipY = true; texture.needsUpdate = true }) },
         pointSize: { value: window.devicePixelRatio || 1.0 },
         posTex: { value: null },
         velTex: { value: null }

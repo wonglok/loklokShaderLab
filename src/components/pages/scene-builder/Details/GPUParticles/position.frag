@@ -82,7 +82,6 @@ void main() {
     vec4 lastPos = texture2D( posTex, uv );
     vec4 lastRes = texture2D( resTex, uv );
 
-
     if (mouse.x < 0.0) {
       vec3 diff = resDiff(lastPos.xyz, lastRes.xyz);
       lastPos.xyz += diff;
@@ -100,8 +99,6 @@ void main() {
       lastPos.xyz += lastVel.xyz;
       gl_FragColor = lastPos;
     }
-
-
 
     // gl_FragColor = lastRes;
 }

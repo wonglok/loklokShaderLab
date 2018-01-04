@@ -13,6 +13,7 @@ export default {
   Mesh: require('./Element/Mesh.vue').default,
   Points: require('./Element/Points.vue').default,
   PointLight: require('./Element/PointLight.vue').default,
+  SpotLight: require('./Element/SpotLight.vue').default,
 
   MeshLambertMaterial: require('./Material/MeshLambertMaterial.vue').default,
   MeshPhongMaterial: require('./Material/MeshPhongMaterial.vue').default,

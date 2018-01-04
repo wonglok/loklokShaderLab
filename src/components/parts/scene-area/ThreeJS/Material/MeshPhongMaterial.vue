@@ -19,7 +19,7 @@ export default {
   },
   created () {
     this.material = new THREE.MeshPhongMaterial({
-      color: this.color
+      color: new THREE.Color(this.color)
     })
     this.$parent.$emit('material', this.material)
   }

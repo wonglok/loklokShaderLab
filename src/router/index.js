@@ -16,6 +16,7 @@ import Woozy from '@/components/pages/scene-builder/Details/Woozy.vue'
 import GPUParticles from '@/components/pages/scene-builder/Details/GPUParticles.vue'
 import RefractScene from '@/components/pages/scene-builder/Details/RefractScene.vue'
 import TwistedBoxTube from '@/components/pages/scene-builder/Details/TwistedBoxTube.vue'
+import LightPaint from '@/components/pages/scene-builder/Details/LightPaint.vue'
 
 Vue.use(Router)
 
@@ -65,6 +66,10 @@ export default new Router({
         {
           path: 'twistedboxtube',
           component: TwistedBoxTube
+        },
+        {
+          path: 'lightpaint',
+          component: LightPaint
         }
       ]
     },
