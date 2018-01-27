@@ -2,6 +2,7 @@
 <div ref="toucher">
 
   <OrbitControls v-if="camera" :toucher="$refs['toucher']" :camera="camera" />
+
   <PerspectiveCamera
     :fov="75"
     :aspect="size.aspect"
@@ -13,8 +14,7 @@
 
   <Scene @scene="(v) => { scene = v }">
     <!-- <SceneReader :doc="doc" ref="sceneReader" /> -->
-
-    <LightPaint @paint="(v) => { paint = v }" />
+    <!-- <LightPaint @paint="(v) => { paint = v }" /> -->
 
   </Scene>
 
@@ -24,7 +24,7 @@
 <script>
 import * as THREE from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
-import LightPaint from './LightPaint/LightPaint.vue'
+// import LightPaint from './LightPaint/LightPaint.vue'
 // import SceneReader from './SceneReader'
 import Bundle from '@/components/parts/scene-area/ThreeJS/Bundle'
 /* eslint-disable */
@@ -34,7 +34,7 @@ import Bundle from '@/components/parts/scene-area/ThreeJS/Bundle'
 export default {
   THREE,
   components: {
-    LightPaint,
+    // LightPaint,
     // SceneReader,
     ...Bundle
   },
@@ -46,9 +46,9 @@ export default {
   data () {
     return {
       cam: {
-        pos: { x: 3, y: 5, z: 10 }
+        pos: { x: 3, y: 5, z: 20 }
       },
-      paint: false,
+      lights: [],
       ready: false,
       cubeCamera: false,
       visible: true,
@@ -65,8 +65,8 @@ export default {
     },
     renderer () {
       if (this.camera && this.renderer) {
-        this.renderer.gammaInput = true
-        this.renderer.gammaOutput = true
+        // this.renderer.gammaInput = true
+        // this.renderer.gammaOutput = true
         this.ready = true
       }
     },
@@ -78,14 +78,39 @@ export default {
   },
   methods: {
     setup () {
+      var geometry = new THREE.PlaneBufferGeometry(20, 20, 32, 32)
+      var material = new THREE.MeshPhongMaterial({color: 0xffffff, side: THREE.DoubleSide})
+      var plane = new THREE.Mesh(geometry, material)
+      this.scene.add(plane)
+
+      this.lights.push(this.makeLight({
+        id: 'l1',
+        pos: new THREE.Vector3(20, 20, 20),
+        color: new THREE.Color(0xff0000)
+      }))
+
+      this.lights.push(this.makeLight({
+        id: 'l2',
+        pos: new THREE.Vector3(-20, 20, 20),
+        color: new THREE.Color(0x0000ff)
+      }))
+
+      this.lights.push(this.makeLight({
+        id: 'l3',
+        pos: new THREE.Vector3(10, -20, 20),
+        color: new THREE.Color(0x00ff00)
+      }))
+    },
+    makeLight ({ pos, color }) {
+      var light = new THREE.PointLight(color, 1, 100)
+      light.position.copy(pos)
+      this.scene.add(light)
+      return light
     },
     renderWebGL () {
       TWEEN.update()
-      if (this.paint) {
-        this.paint.update()
-      }
-      // if (this.$refs.sceneReader) {
-      //   this.$refs.sceneReader.funcRunner()
+      // if (this.paint) {
+      //   this.paint.update()
       // }
       if (this.scene && this.camera && this.renderer) {
         this.renderer.render(this.scene, this.camera)

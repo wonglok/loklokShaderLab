@@ -5,13 +5,21 @@
 <script>
 import * as THREE from 'three'
 export default {
+  props: {
+    color: {
+      default () {
+        return 0xffffff
+      }
+    }
+  },
   data () {
     return {
       light: false
     }
   },
   mounted () {
-    this.light = new THREE.PointLight({ color: 0xffffff })
+    this.light = new THREE.PointLight({ color: new THREE.Color(this.color) })
+    this.$emit('element', this.light)
     this.$parent.$emit('add', this.light)
   },
   beforeDestroy () {

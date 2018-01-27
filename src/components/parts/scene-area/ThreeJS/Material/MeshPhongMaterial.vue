@@ -19,7 +19,9 @@ export default {
   },
   created () {
     this.material = new THREE.MeshPhongMaterial({
-      color: new THREE.Color(this.color)
+      color: new THREE.Color(this.color),
+      specular: new THREE.Color(0x111111),
+      shininess: 50
     })
     this.$parent.$emit('material', this.material)
   }

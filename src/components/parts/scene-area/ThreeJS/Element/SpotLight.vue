@@ -12,7 +12,7 @@ export default {
   },
   mounted () {
     this.light = new THREE.SpotLight({ color: 0xffffff })
-    this.$parent.$emit('add', this.light.target)
+    this.$parent.$emit('add', this.light)
     // if (this.$parent.object3d) {
     //   this.light.target = this.$parent.object3d
     // }

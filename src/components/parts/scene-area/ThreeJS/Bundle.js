@@ -24,7 +24,5 @@ export default {
   TorusKnotBufferGeometry: require('./Geo/TorusKnotBufferGeometry.vue').default,
   SphereBufferGeometry: require('./Geo/SphereBufferGeometry.vue').default,
   BoxBufferGeometry: require('./Geo/BoxBufferGeometry.vue').default,
-  PlaneBufferGeometry: require('./Geo/PlaneBufferGeometry.vue').default,
-
-  dummy: {}
+  PlaneBufferGeometry: require('./Geo/PlaneBufferGeometry.vue').default
 }
