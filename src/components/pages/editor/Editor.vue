@@ -134,6 +134,8 @@ export default {
       var proj = JSON.parse(evt.target.value)
       this.current._filePath = '@/index.html'
       this.projectFiles = proj
+      this.$forceUpdate()
+      this.compileFiles({})
     },
     exportJS () {
       this.canDownload = true
@@ -166,6 +168,8 @@ export default {
           this.projectFiles = JSON.parse(ev.target.result)
           var currnetFilePath = this.currentFile.path
           this.current._filePath = this.projectFiles.find(e => e.path === currnetFilePath).path
+          this.$forceUpdate()
+          this.compileFiles({})
         } catch (e) {
           this.projectFiles = backup
           console.log('cannot read file')
