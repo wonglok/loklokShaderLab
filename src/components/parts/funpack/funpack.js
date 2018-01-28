@@ -37,18 +37,7 @@ export function indexHTML ({ author }) {
   <script src="https://threejs.org/examples/js/GPUComputationRenderer.js"></script>
 
   <style type="text/css">
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0px;
-      padding: 0px;
-    }
-    html, body, #app {
-      box-sizing: border-box;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
+
   </style>
   </head>
   <body>
@@ -198,6 +187,23 @@ var app = new Vue({
 
 export default app;
 `
+    },
+    {
+      path: '@/style.css',
+      src: `
+      html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+      }
+      html, body, #app {
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      `
     },
     {
       path: '@/router.js',

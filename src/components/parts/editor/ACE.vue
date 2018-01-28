@@ -49,6 +49,9 @@ export default {
         if (ext === 'html') {
           ans = 'html'
         }
+        if (ext === 'css') {
+          ans = 'css'
+        }
         if (ext === 'vert') {
           ans = 'glsl'
         }
@@ -111,6 +114,7 @@ export default {
 
     require('brace/mode/html')
     require('brace/mode/javascript')
+    require('brace/mode/css')
     require('brace/mode/glsl')
     // require('brace/mode/sass')
     require('brace/theme/chrome')

@@ -180,6 +180,8 @@ export default {
         return true
       } else if (src === '@/router.js') {
         return true
+      } else if (src === '@/style.css') {
+        return true
       } else {
         return false
       }
@@ -219,8 +221,9 @@ export default {
       )
     },
     setFile (file) {
-      this.current._filePath = file.path
+      this.current._filePath = ''
       this.$nextTick(() => {
+        this.current._filePath = file.path
         this.$forceUpdate()
       })
     },

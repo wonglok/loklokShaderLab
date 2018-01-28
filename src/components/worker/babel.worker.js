@@ -26,6 +26,24 @@ var compile = ({ path, src }) => {
       } else if (path.split('.').pop() === 'html') {
         // dont include html in the js file
         output = ''
+      } else if (path.split('.').pop() === 'css') {
+        // text
+        var css = JSON.stringify(src)
+
+        var code = `
+          var css = ${css};
+          var head = document.head || document.getElementsByTagName('head')[0];
+          var style = document.createElement('style');
+          style.type = 'text/css';
+          if (style.styleSheet) {
+            style.styleSheet.cssText = css;
+          } else {
+            style.appendChild(document.createTextNode(css));
+          }
+          head.appendChild(style);
+        `
+
+        output = Babel.transform(code + `export default ` + css, { presets: ['es2015'], plugins: [...es6], moduleId: path }).code
       } else {
         // text
         output = Babel.transform(`export default ` + '`' + `${src}` + '`', { presets: ['es2015'], plugins: [...es6], moduleId: path }).code
@@ -86,7 +104,7 @@ self.onmessage = ({ data }) => {
     return compile(file)
   })).then((all) => {
     var entry = all.reduce((accu, val, key) => {
-      return accu + '\n' + val.output
+      return accu + '\n\n' + val.output
     }, '')
     var rand = (Math.random() * 100000000000000).toFixed(0)
     var result = `
