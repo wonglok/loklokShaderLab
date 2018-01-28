@@ -1,0 +1,32 @@
+[debug] [2018-01-28T08:49:55.972Z] ----------------------------------------------------------------------
+[debug] [2018-01-28T08:49:55.974Z] Command:       /Users/lok/.nvm/versions/node/v7.9.0/bin/node /Users/lok/.nvm/versions/node/v7.9.0/bin/firebase deploy
+[debug] [2018-01-28T08:49:55.975Z] CLI Version:   3.17.4
+[debug] [2018-01-28T08:49:55.975Z] Platform:      darwin
+[debug] [2018-01-28T08:49:55.975Z] Node Version:  v7.9.0
+[debug] [2018-01-28T08:49:55.975Z] Time:          Sun Jan 28 2018 16:49:55 GMT+0800 (HKT)
+[debug] [2018-01-28T08:49:55.975Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-01-28T08:49:55.987Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-01-28T08:49:55.987Z] > authorizing via signed-in user
+[debug] [2018-01-28T08:49:55.989Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/loklokshaderlab  
+  
+ Sun Jan 28 2018 16:49:55 GMT+0800 (HKT)
+[debug] [2018-01-28T08:49:57.222Z] <<< HTTP RESPONSE 200
+[debug] [2018-01-28T08:49:57.224Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/loklokshaderlab/tokens  
+  
+ Sun Jan 28 2018 16:49:57 GMT+0800 (HKT)
+[debug] [2018-01-28T08:49:58.463Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'loklokshaderlab'...
+[info] 
+[info] i  deploying database, storage, firestore, functions, hosting
+[info] i  database: checking rules syntax...
+[debug] [2018-01-28T08:49:59.359Z] >>> HTTP REQUEST PUT https://loklokshaderlab.firebaseio.com/.settings/rules.json?dryRun=true  
+ {
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+ 
+ Sun Jan 28 2018 16:49:59 GMT+0800 (HKT)

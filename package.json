@@ -26,6 +26,7 @@
     "memory-fs": "^0.4.1",
     "requirejs": "^2.3.5",
     "three": "^0.88.0",
+    "uglify-es": "^3.3.9",
     "uglifyjs-browser": "^1.0.0",
     "uuid": "^3.1.0",
     "vue": "^2.5.2",
