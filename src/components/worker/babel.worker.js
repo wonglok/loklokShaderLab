@@ -24,6 +24,7 @@ var compile = ({ path, src }) => {
         // json
         output = Babel.transform(`export default ${JSON.stringify(JSON.parse(src))};`, { presets: ['es2015'], plugins: [...es6], moduleId: path }).code
       } else if (path.split('.').pop() === 'html') {
+        // dont include html in the js file
         output = ''
       } else {
         // text
@@ -89,16 +90,19 @@ self.onmessage = ({ data }) => {
     }, '')
     var rand = (Math.random() * 100000000000000).toFixed(0)
     var result = `
-function OMG_${rand} () {
-  var self = this;
-  ${entry}
-  requireJSRequire(['@/main.js'], function () {
-    setTimeout(() => {
-      window.top.postMessage({ type: 'requirejs-ready' }, window.location.origin);
-    }, 10)
-  });
-}
-new OMG_${rand}();
+(function(){
+  function OMG_${rand} () {
+    var self = this;
+    ${entry}
+    requireJSRequire(['@/main.js'], function () {
+      // setTimeout(() => {
+      //   window.top.postMessage({ type: 'requirejs-ready' }, window.location.origin);
+      // }, 10);
+    });
+  }
+  new OMG_${rand}();
+}());
+
 `
 
     postMessage({ event: 'done', js: result })

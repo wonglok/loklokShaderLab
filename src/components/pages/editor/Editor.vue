@@ -12,16 +12,30 @@
       <button v-if="iframer" @click="() => { closeiFrame() }">closeIframe</button>
 
       <span v-show="compiling">Compiling</span>
-      <div>
+
+      <br />
+
+      <button @click="exportJS">Export Portable JS</button>
+      <button @click="exportProjectFiles">Backup Project</button>
+      <input type="file" @change="importProjectFiles" />
+      <select @change="viewProj">
+        <option :key="sample.name" v-for="sample in samples" :value="sample.prj">{{ sample.name }}</option>
+      </select>
+
+      <!-- <div>
         <input type="range" style="width: 300px;" step="0.1" ref="demo-slider" @input="(evt) => { updateSlider(evt.target.value) }" />
-      </div>
+      </div> -->
 
       <draggable v-model="projectFiles" :options="{group:'people'}" @start="drag = true" @end="drag = false" @change="() => { compileFiles() }">
-        <div v-for="(pFile, pfKey) in projectFiles" :key="pfKey"><input v-model="pFile.path" style="font-size: 16px; width: 300px;" :disabled="checkDisable(pFile.path)" /> <button @click="setFile(pFile)">Edit</button></div>
+        <div v-for="(pFile, pfKey) in projectFiles" :key="pfKey">
+          <input v-model="pFile.path" style="font-size: 16px; width: 300px;" :disabled="checkDisable(pFile.path)" />
+          <button @click="setFile(pFile)">Edit</button>
+          <button v-show="!checkDisable(pFile.path)" @click="removeFile(projectFiles, pfKey)">remove</button>
+        </div>
       </draggable>
 
       <iframe width="400" height="400" :src="iframer" frameborder="0" ref="iframer" v-if="iframer" class="iframe"  allowfullscreen></iframe>
-      <ACE @save="() => { compileFiles() }" :filepath="current.file.path" v-model="current.file.src" @input="(value) => { isDirty = true; }"  theme="chrome" width="100%" :height="ace.height"></ACE>
+      <ACE v-if="currentFile"  @save="() => { compileFiles() }" :filepath="currentFile.path" v-model="currentFile.src" @input="(value) => { isDirty = true; }"  theme="chrome" width="100%" :height="ace.height"></ACE>
     </div>
     <div v-else>
       Loading......
@@ -33,33 +47,47 @@
 import draggable from 'vuedraggable'
 import complier from '@/components/parts/complier/complier.js'
 import ACE from '@/components/parts/editor/ACE.vue'
-import { getNewProject, initTokenReplacer, newFile } from '@/components/parts/template/template.js'
+import { initTokenReplacer, newFile, genJS } from '@/components/parts/funpack/funpack.js'
 export default {
   components: {
     ACE,
     draggable
   },
   data () {
-    return {
+    var projectFiles = []
+    var ans = {
+      samples: [
+        {
+          name: 'WebGL',
+          prj: JSON.stringify(require('./webgl-particle.json'))
+        },
+        {
+          name: 'Simple VueJS',
+          prj: JSON.stringify(require('./simple-vue.json'))
+        }
+      ],
       iframeLink: false,
       iwindow: false,
-      iframer: false,
+      iframer: true,
       complier,
-      projectFiles: [],
+      projectFiles,
       ace: {
         height: window.innerHeight - 50
       },
       current: {
-        file: {
-          path: '@/main.js',
-          src: '//Welcome! Loading.....'
-        }
+        _filePath: '@/index.html'
       },
       newFilePath: `@/src/newFile.js`,
       isDirty: false,
       clean () {},
       blob: false,
       compiling: false
+    }
+    return ans
+  },
+  computed: {
+    currentFile () {
+      return this.projectFiles.find((e) => { return e.path === this.current._filePath })
     }
   },
   mounted () {
@@ -72,6 +100,7 @@ export default {
     window.addEventListener('beforeunload', (e) => {
       this.closeWindow()
     }, false)
+
     setInterval(() => {
       if (this.isDirty) {
         this.isDirty = false
@@ -79,14 +108,18 @@ export default {
       }
     }, 3333)
     setTimeout(() => {
-      this.projectFiles = getNewProject({ author: 'loklok' })
-      this.current.file = this.projectFiles[0]
+      // this.projectFiles = require('./sample.json')
+      this.projectFiles = require('./webgl-particle.json')
+      // this.projectFiles = getNewWebGLProject({ author: '' })
+      // this.projectFiles = getNewProject({ author: 'loklok' })
+      this.current._filePath = this.projectFiles[0].path
       this.compileFiles()
     }, 1000)
     var onWorker = (evt) => {
       this.compiling = false
       // console.log(evt.data.js)
       this.onCompleteCompile({ js: evt.data.js })
+      this.downloadCompiledJS({ js: evt.data.js })
     }
     this.clean = complier.setUp({ onWorker })
   },
@@ -97,10 +130,55 @@ export default {
     }
   },
   methods: {
+    viewProj (evt) {
+      var proj = JSON.parse(evt.target.value)
+      this.current._filePath = '@/index.html'
+      this.projectFiles = proj
+    },
+    exportJS () {
+      this.canDownload = true
+      this.compileFiles({})
+    },
+    downloadCompiledJS ({ js }) {
+      if (this.canDownload) {
+        this.canDownload = false
+        var string = genJS({ js, justJS: true })
+        var anchor = document.createElement('a')
+        anchor.href = URL.createObjectURL(new Blob([string]))
+        anchor.download = 'loklok-portable-js.js'
+        anchor.click()
+      }
+    },
+    exportProjectFiles () {
+      var files = this.projectFiles
+      var json = JSON.stringify(files)
+      var anchor = document.createElement('a')
+      anchor.href = URL.createObjectURL(new Blob([json]))
+      anchor.download = 'lab.json'
+      anchor.click()
+    },
+    importProjectFiles (evt) {
+      var file = evt.target.files[0]
+      var reader = new FileReader()
+      reader.onload = (ev) => {
+        var backup = this.projectFiles
+        try {
+          this.projectFiles = JSON.parse(ev.target.result)
+          var currnetFilePath = this.currentFile.path
+          this.current._filePath = this.projectFiles.find(e => e.path === currnetFilePath).path
+        } catch (e) {
+          this.projectFiles = backup
+          console.log('cannot read file')
+        }
+      }
+      reader.readAsText(file)
+    },
     checkDisable (src) {
       if (src === '@/index.html') {
         return true
       } else if (src === '@/main.js') {
+        return true
+      } else if (src === '@/router.js') {
         return true
       } else {
         return false
@@ -115,8 +193,8 @@ export default {
     },
     onCompleteCompile ({ js }) {
       this.blob = new Blob([this.getHTML({ js })], { type: 'text/html' })
-      if (this.blob) {
-        URL.revokeObjectURL(this.blob)
+      if (this.iframeLink) {
+        URL.revokeObjectURL(this.iframeLink)
       }
       this.iframeLink = URL.createObjectURL(this.blob)
 
@@ -141,10 +219,16 @@ export default {
       )
     },
     setFile (file) {
-      this.current.file = file
-      // this.compileFiles()
+      this.current._filePath = file.path
+      this.$nextTick(() => {
+        this.$forceUpdate()
+      })
     },
-
+    removeFile (array, index) {
+      if (window.confirm(`delete?`)) {
+        array.splice(index, 1)
+      }
+    },
     openWindow () {
       if (this.iframeLink) {
         var strWindowFeatures = 'menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes'

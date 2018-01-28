@@ -1,5 +1,9 @@
 import requireJSStr from '../../worker/requirejs.str.txt'
 
+var uglify = require('uglifyjs-browser')
+
+// import vueHttpCompo from '../../worker/httpvuecompo.str.txt'
+
 export function scriptSRC (src) {
   return `<script src="${src}">` + `</script>`
 }
@@ -24,11 +28,11 @@ export function indexHTML ({ author }) {
   <meta name="keywords" content="WebGL, Art">
 
   <!--
+  -->
+
   ${scriptSRC('https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.2/vue.min.js')}
   ${scriptSRC('https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.1/vue-router.min.js')}
   ${scriptSRC('https://cdnjs.cloudflare.com/ajax/libs/tween.js/16.3.5/Tween.min.js')}
-  -->
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.min.js" integrity="sha256-6fhm481uY9c152qGWIVgE7KbzaCj5WjCi3BGIpZef2E=" crossorigin="anonymous"></script>
   <script src="https://threejs.org/examples/js/GPUComputationRenderer.js"></script>
 
@@ -61,19 +65,51 @@ export function newFile ({ path }) {
   }
 }
 
-export function initTokenReplacer ({ html, js }) {
-  return html.replace(initToken(), `<script type="text" id="initAPP">` + js + `<` + `/` + `script>` + `<script>` + requireJSStr + `<` + `/` + `script>` + `<script>` + `
-  (function(){
-    var js = document.getElementById('initAPP').innerHTML;
-    var blob = new Blob([js], { type: 'text/html' });
-    var url = URL.createObjectURL(blob);
+function minify ({ js }) {
+  const src = js
 
-    var scpt = document.createElement('script');
-    scpt.src = url;
-    document.body.appendChild(scpt);
+  let ast = uglify.parse(src)
+  ast.figure_out_scope()
+  const compressor = uglify.Compressor()
+  ast = ast.transform(compressor)
 
+  ast.figure_out_scope()
+  ast.compute_char_frequency()
+  ast.mangle_names()
+
+  const minified = ast.print_to_string()
+  return minified
+}
+
+export function genPortableCode ({ js }) {
+  js = minify({ js })
+  var minifyRequireJSStr = minify({ js: requireJSStr })
+  var divider = '\n\n//-=-=-=-=-=-=-=-=-=-=-=-=\n\n'
+  var deps = ''
+
+  deps += require('../../worker/vue.min.str.txt') + divider
+  deps += require('../../worker/vue.router.min.str.txt') + divider
+  deps += require('../../worker/tween.min.str.txt') + divider
+  deps += require('../../worker/threejs.r88.str.txt') + divider
+  deps += require('../../worker/threejs.gpu.min.str.txt') + divider
+
+  return `
+    (function(){
+
+      /*
+        <div id="app-attach-point"></div>
+      */
+
+      ${deps + divider + minifyRequireJSStr + divider + js}
+
+    }())
+  `
+}
+
+export function genIframeCode ({ js }) {
+  var divider = '\n\n//-=-=-=-=-=-=-=-=-=-=-=-=\n\n'
+  var iframeAndWindow = `
     var suspendClose = false;
-
     window.addEventListener('message', ({ data }) => {
       if (data.type === 'suspend-close') {
         suspendClose = true;
@@ -100,13 +136,139 @@ export function initTokenReplacer ({ html, js }) {
         window.top.postMessage({ type: 'close' }, window.location.origin)
       }
     }, false)
+  `
+  return `
+    (function(){
 
-  }())
+      /*
+        <div id="app-attach-point"></div>
+      */
 
+      function createJS (js) {
+        var blob = new Blob([js]);
+        var url = URL.createObjectURL(blob);
+
+        var scpt = document.createElement('script');
+        scpt.src = url;
+        document.body.appendChild(scpt);
+      }
+
+      createJS(${JSON.stringify(divider + requireJSStr + divider + js)});
+
+      ${iframeAndWindow}
+
+    }())
+  `
+}
+
+export function genJS ({ js, justJS }) {
+  if (justJS) {
+    return genPortableCode({ js })
+  } else {
+    return genIframeCode({ js })
+  }
+}
+
+export function initTokenReplacer ({ html, js }) {
+  return html.replace(initToken(), `<script>` + `
+    ${genJS({ js })}
 //` + `</` + `script>`)
 }
 
 export function getNewProject ({ author }) {
+  return [
+    {
+      path: '@/index.html',
+      src: indexHTML({ author })
+    },
+    {
+      path: '@/main.js',
+      src: `//
+import App from '@/src/app.js'
+import router from '@/router.js'
+
+var app = new Vue({
+  router,
+  el: '#app',
+  components: {
+    App
+  },
+  template: '<div id="app"><App /></div>'
+})
+
+export default app;
+`
+    },
+    {
+      path: '@/router.js',
+      src: `//
+import Home from '@/src/pages/home.js'
+import About from '@/src/pages/about.js'
+
+const router = new VueRouter({
+  mode: 'hash',
+  routes: [
+    {
+      path: '/',
+      component: Home
+    },
+    {
+      path: '/about',
+      component: About
+    }
+  ]
+})
+
+export default router
+`
+    },
+    {
+      path: '@/src/app.js',
+      src: `//
+export default {
+  name: 'App',
+  template: ` + `\`
+    <div>
+      App Wrapper
+      <br />
+      <router-link to="/">Home</router-link>
+      <router-link to="/about">About</router-link>
+      <br />
+      <router-view></router-view>
+    </div>
+  \`` + `
+};
+`
+    },
+    {
+      path: '@/src/pages/home.js',
+      src: `//
+export default {
+  template: \`` + `
+    <div>
+      Home
+    </div>
+  ` + `\`
+};
+`
+    },
+    {
+      path: '@/src/pages/about.js',
+      src: `//
+export default {
+  template: \`` + `
+    <div>
+      About
+    </div>
+  ` + `\`
+};
+`
+    }
+
+  ]
+}
+
+export function getNewWebGLProject ({ author }) {
   return [
     {
       path: '@/index.html',
@@ -350,7 +512,7 @@ export function makeAPI() {
             fragmentShader: particleF.default,
             uniforms: {
                 opacity: {
-                    value: 0,
+                    value: 1.0,
                 },
                 resolution: {
                     value: new THREE.Vector2(window.innerWidth, window.innerHeight),
