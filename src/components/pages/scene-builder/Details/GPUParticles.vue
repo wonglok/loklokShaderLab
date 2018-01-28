@@ -13,7 +13,7 @@
 
   <Scene @scene="(v) => { scene = v }">
 
-    <SceneReader :doc="doc" ref="sceneReader" />
+    <!-- <SceneReader :doc="doc" ref="sceneReader" /> -->
 
     <Object3D
       :pz="0.0" :py="0.0" :px="0.0"
