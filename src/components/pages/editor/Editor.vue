@@ -58,8 +58,12 @@ export default {
     var ans = {
       samples: [
         {
-          name: 'GraphGL',
-          prj: JSON.stringify(require('./graph-gl.json'))
+          name: 'Spacial',
+          prj: JSON.stringify(require('./llgl-spacial.json'))
+        },
+        {
+          name: 'LLGL - Lok Lok GL',
+          prj: JSON.stringify(require('./llgl-loklokGL.json'))
         },
         {
           name: 'WebGL',
