@@ -1,10 +1,14 @@
 import * as Babel from '@babel/standalone/babel.js'
 import * as VueCompo from './vue.processor.js'
 
+var dynamicSpread = require('babel-plugin-transform-object-rest-spread')
+Babel.registerPlugin('transform-object-rest-spread', dynamicSpread)
+
 var umd = require('babel-plugin-transform-es2015-modules-umd')
 Babel.registerPlugin('transform-es2015-modules-umd', umd)
 
 var es6 = [
+  [ 'transform-object-rest-spread', { 'useBuiltIns': true } ],
   [
     'transform-es2015-modules-umd',
     {

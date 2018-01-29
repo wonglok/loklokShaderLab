@@ -58,6 +58,10 @@ export default {
     var ans = {
       samples: [
         {
+          name: 'GraphGL',
+          prj: JSON.stringify(require('./graph-gl.json'))
+        },
+        {
           name: 'WebGL',
           prj: JSON.stringify(require('./webgl-particle.json'))
         },
@@ -109,7 +113,8 @@ export default {
     }, 3333)
     setTimeout(() => {
       // this.projectFiles = require('./sample.json')
-      this.projectFiles = require('./webgl-particle.json')
+      // this.projectFiles = require('./webgl-particle.json')
+      this.projectFiles = JSON.parse(this.samples[0].prj)
       // this.projectFiles = getNewWebGLProject({ author: '' })
       // this.projectFiles = getNewProject({ author: 'loklok' })
       this.current._filePath = this.projectFiles[0].path
