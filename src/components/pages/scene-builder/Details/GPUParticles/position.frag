@@ -82,23 +82,36 @@ void main() {
     vec4 lastPos = texture2D( posTex, uv );
     vec4 lastRes = texture2D( resTex, uv );
 
-    if (mouse.x < 0.0) {
-      vec3 diff = resDiff(lastPos.xyz, lastRes.xyz);
-      lastPos.xyz += diff;
-      gl_FragColor = lastPos;
-    } else {
-      float az = 0.0;
-      float el = 0.0;
-      vec3 noiser = vec3(lastPos);
-      noiser += cnoise(lastPos.xy) * 2.5;
-      // noiser += sin(lastPos.x * 0.3) * 2.5;
-      noiser += sin(lastPos.y * 0.3) * 2.5;
+    float az = 0.0;
+    float el = 0.0;
+    vec3 noiser = vec3(lastPos);
+    // noiser += cnoise(lastPos.xy) * 2.5;
 
-      toBall(noiser, az, el);
-      lastPos.xyz = fromBall(65.0, az, el);
-      lastPos.xyz += lastVel.xyz;
-      gl_FragColor = lastPos;
-    }
+    // noiser += sin(lastPos.z * 0.3) * 2.5;
+    noiser += sin(lastPos.y * 0.3) * 2.5;
+
+    toBall(noiser, az, el);
+    lastPos.xyz = fromBall(65.0, az, el);
+    lastPos.xyz += lastVel.xyz;
+    gl_FragColor = lastPos;
+
+    // if (mouse.x < 0.0) {
+    //   vec3 diff = resDiff(lastPos.xyz, lastRes.xyz);
+    //   lastPos.xyz += diff;
+    //   gl_FragColor = lastPos;
+    // } else {
+    //   float az = 0.0;
+    //   float el = 0.0;
+    //   vec3 noiser = vec3(lastPos);
+    //   noiser += cnoise(lastPos.xy) * 2.5;
+    //   // noiser += sin(lastPos.x * 0.3) * 2.5;
+    //   noiser += sin(lastPos.y * 0.3) * 2.5;
+
+    //   toBall(noiser, az, el);
+    //   lastPos.xyz = fromBall(65.0, az, el);
+    //   lastPos.xyz += lastVel.xyz;
+    //   gl_FragColor = lastPos;
+    // }
 
     // gl_FragColor = lastRes;
 }

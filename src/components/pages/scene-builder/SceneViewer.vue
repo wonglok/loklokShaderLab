@@ -1,6 +1,5 @@
 <template>
   <div ref="full">
-
     <Renderer
       ref="renderer"
       :size="size"
@@ -18,7 +17,6 @@
         </component>
       </keep-alive>
     </Renderer>
-
   </div>
 </template>
 

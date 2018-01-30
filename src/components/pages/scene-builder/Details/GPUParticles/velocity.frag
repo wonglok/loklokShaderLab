@@ -37,14 +37,18 @@ void main() {
     vec4 lastPos = texture2D(posTex, uv);
     vec4 lastRes = texture2D(resTex, uv);
 
-    if (mouse.x < 0.0) {
-        gl_FragColor = lastRes;
-    } else {
-        vec3 diff = getDiff(lastPos.xyz, vec3(mouse, 0.1));
-        lastVel.xyz += diff * 15.0;
-        gl_FragColor = lastVel;
-        // vec3 diff = resDiff( lastPos.xyz, vec3(lastRes) );
-        // lastVel.xyz += diff;
-    }
+    vec3 diff = getDiff(lastPos.xyz, vec3(mouse, 0.1));
+    lastVel.xyz += diff * 15.0;
+    gl_FragColor = lastVel;
+
+    // if (mouse.x < 0.0) {
+    //     gl_FragColor = lastRes;
+    // } else {
+    //     vec3 diff = getDiff(lastPos.xyz, vec3(mouse, 0.1));
+    //     lastVel.xyz += diff * 15.0;
+    //     gl_FragColor = lastVel;
+    //     // vec3 diff = resDiff( lastPos.xyz, vec3(lastRes) );
+    //     // lastVel.xyz += diff;
+    // }
 
 }
