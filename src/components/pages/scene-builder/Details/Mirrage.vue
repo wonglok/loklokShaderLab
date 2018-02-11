@@ -15,7 +15,6 @@
   <Scene @scene="(v) => { scene = v }">
 
     <Refractor :position="{ x: 0, y: 0, z: 3 }" ref="refractor" />
-
     <SceneReader :doc="doc" ref="sceneReader" />
 
   </Scene>
