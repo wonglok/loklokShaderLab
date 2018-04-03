@@ -22,9 +22,9 @@
         <option :key="sample.name" v-for="sample in samples" :value="sample.prj">{{ sample.name }}</option>
       </select>
 
-      <!-- <div>
+      <div>
         <input type="range" style="width: 300px;" step="0.1" ref="demo-slider" @input="(evt) => { updateSlider(evt.target.value) }" />
-      </div> -->
+      </div>
 
       <draggable v-model="projectFiles" :options="{group:'people'}" @start="drag = true" @end="drag = false" @change="() => { compileFiles() }">
         <div v-for="(pFile, pfKey) in projectFiles" :key="pfKey">
@@ -35,7 +35,7 @@
       </draggable>
 
       <iframe width="400" height="400" :src="iframer" frameborder="0" ref="iframer" v-if="iframer" class="iframe"  allowfullscreen></iframe>
-      <ACE v-if="currentFile"  @save="() => { compileFiles() }" :filepath="currentFile.path" v-model="currentFile.src" @input="(value) => { isDirty = true; }"  theme="chrome" width="100%" :height="ace.height"></ACE>
+      <ACE v-if="currentFile"  @save="() => { compileFiles(); exportProjectFiles(); }" :filepath="currentFile.path" v-model="currentFile.src" @input="(value) => { isDirty = true; }"  theme="chrome" width="100%" :height="ace.height"></ACE>
     </div>
     <div v-else>
       Loading......
@@ -124,6 +124,11 @@ export default {
       this.current._filePath = this.projectFiles[0].path
       this.compileFiles()
     }, 1000)
+
+    window.addEventListener('loklok', (evt) => {
+      console.log(evt)
+    })
+
     var onWorker = (evt) => {
       this.compiling = false
       // console.log(evt.data.js)
@@ -250,6 +255,9 @@ export default {
         var strWindowFeatures = 'menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes'
         strWindowFeatures = `directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${window.innerWidth},height=${window.innerHeight}`
         this.iwindow = window.open(this.iframeLink, 'title', strWindowFeatures)
+        this.iwindow.addEventListener('loklok', (evt) => {
+          console.log('loklok', evt)
+        })
         this.iwindow.onmessage = ({ data }) => {
           if (data.type === 'close') {
             this.closeWindow()
@@ -272,12 +280,12 @@ export default {
       }
     },
     syncInfoToSubWindow () {
-      if (this.$refs['demo-slider']) {
-        this.updateSlider(this.$refs['demo-slider'].value)
-      }
+      // if (this.$refs['demo-slider']) {
+      //   this.updateSlider(this.$refs['demo-slider'].value)
+      // }
     },
     updateSlider (number) {
-      var content = { type: 'cw.slider', data: { value: parseFloat(number) } }
+      var content = { type: 'en.slider', data: { value: parseFloat(number) } }
       if (this.iwindow) {
         this.iwindow.postMessage(content, window.location.origin)
       }

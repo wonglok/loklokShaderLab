@@ -60,6 +60,8 @@ var compile = ({ path, src }) => {
         let css = JSON.stringify(info.style)
         info.template = info.template.replace('>', `${scopeID}>`)
 
+        /* eslint-disable */
+
         let code = `
           var css = ${css};
           var head = document.head || document.getElementsByTagName('head')[0];
@@ -130,6 +132,8 @@ var compile = ({ path, src }) => {
             addScope(style, '[${scopeID}]');
           }
         `
+
+        /* eslint-enable */
 
         // inject template property into the export Object
         info.script = info.script.replace('export default {', `export default { \n\ttemplate: ${JSON.stringify(info.template)},`)
@@ -204,11 +208,13 @@ self.onmessage = ({ data }) => {
 (function(){
   function OMG_${rand} () {
     var self = this;
+
     ${entry}
+
     requireJSRequire(['@/main.js'], function () {
-      // setTimeout(() => {
-      //   window.top.postMessage({ type: 'requirejs-ready' }, window.location.origin);
-      // }, 10);
+      setTimeout(() => {
+        (window.opener || window.top).postMessage({ type: 'requirejs-ready' }, window.location.origin);
+      }, 10);
     });
   }
   new OMG_${rand}();

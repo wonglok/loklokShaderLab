@@ -1,5 +1,5 @@
 <template>
-<path ref="path" :d="readD" :stroke="stroke" fill="transparent"></path>
+<path ref="path" stroke-width="5" :d="readD" :stroke="stroke" fill="transparent"></path>
 </template>
 
 <script>
